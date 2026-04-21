@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viana Volei - Cadastro Completo</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Viana Volei - Gestão</h1>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="atletas.html" class="active">Atletas</a>
+            <a href="financeiro.html">Financeiro</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section id="cadastro">
+            <h2>Ficha de Inscrição 2025-2026</h2>
+            <form id="form-atleta">
+                
+                <fieldset>
+                    <legend>Dados Pessoais</legend>
+                    <div class="input-group">
+                        <label>Nome Completo do/a Atleta</label>
+                        <input type="text" id="nome" required>
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Data de Nascimento</label>
+                            <input type="date" id="data_nascimento" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Nacionalidade</label>
+                            <input type="text" id="nacionalidade">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Naturalidade</label>
+                        <input type="text" id="naturalidade">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Documentação</legend>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>N° CC / Passaporte / Título Residência</label>
+                            <input type="text" id="documento_id">
+                        </div>
+                        <div class="input-group">
+                            <label>Validade (DD/MM/AA)</label>
+                            <input type="date" id="validade_id">
+                        </div>
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>NIF</label>
+                            <input type="text" id="nif">
+                        </div>
+                        <div class="input-group">
+                            <label>Número Utente</label>
+                            <input type="text" id="numero_utente">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Família e Contactos</legend>
+                    <div class="input-group">
+                        <label>Nome do Pai</label>
+                        <input type="text" id="nome_pai">
+                    </div>
+                    <div class="input-group">
+                        <label>Nome da Mãe</label>
+                        <input type="text" id="nome_mae">
+                    </div>
+                    <div class="input-group">
+                        <label>Contacto Telefónico</label>
+                        <input type="tel" id="telefone" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Morada Completa</label>
+                        <input type="text" id="morada">
+                    </div>
+                    <div class="input-group">
+                        <label>Código Postal</label>
+                        <input type="text" id="cod_postal" placeholder="4750-000">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Informação Desportiva</legend>
+                    <div class="input-group">
+                        <label>Escalão de Inscrição</label>
+                        <select id="escalao">
+                            <option value="Iniciadas">Iniciadas</option>
+                            <option value="Cadetes">Cadetes</option>
+                            <option value="Veteranos">Veteranos</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Licença FPV n.°</label>
+                        <input type="text" id="licenca_fpv">
+                    </div>
+                    <div class="input-group">
+                        <label>Compromisso Desporto Escolar?</label>
+                        <select id="compromisso_escolar">
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Profissão / Coluna 17</label>
+                        <input type="text" id="profissao">
+                    </div>
+                </fieldset>
+
+                <button type="submit" id="btn-salvar">Finalizar Inscrição</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section id="listagem">
+            <h2>Atletas Inscritas</h2>
+            <div id="lista-cards" class="grid-atletas">
+                <p>A carregar base de dados...</p>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/atletas.js"></script>
+</body>
+</html>
