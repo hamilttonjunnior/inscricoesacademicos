@@ -68,3 +68,16 @@ async function carregarAtletas() {
 }
 
 carregarAtletas();
+
+async function carregarEscaloesNoSelect() {
+    const select = document.getElementById('escalao');
+    const querySnapshot = await getDocs(collection(db, "escaloes"));
+    select.innerHTML = "";
+    querySnapshot.forEach(doc => {
+        const opt = document.createElement('option');
+        opt.value = doc.data().nome;
+        opt.textContent = doc.data().nome;
+        select.appendChild(opt);
+    });
+}
+carregarEscaloesNoSelect();
