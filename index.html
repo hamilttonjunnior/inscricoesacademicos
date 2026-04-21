@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viana Volei - Dashboard</title>
+    <title>Viana Volei - Cadastro de Atletas</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,44 +11,121 @@
     <header>
         <h1>Viana Volei - Gestão</h1>
         <nav>
-            <a href="index.html" class="active">Dashboard</a>
-            <a href="atletas.html">Atletas</a>
+            <a href="index.html">Dashboard</a>
+            <a href="atletas.html" class="active">Atletas</a>
             <a href="treinadores.html">Treinadores</a>
             <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
 
     <main class="container">
-        <h2>Painel Geral</h2>
-        
-        <div class="grid-resumo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-            <div class="card-atleta" style="border-left-color: #1a237e;">
-                <h3>Atletas</h3>
-                <p id="total-atletas" style="font-size: 2rem; font-weight: bold;">0</p>
-            </div>
+        <section id="cadastro">
+            <h2>Ficha de Inscrição 2025-2026</h2>
+            <form id="form-atleta">
+                
+                <fieldset>
+                    <legend>1. Identificação da Atleta</legend>
+                    <div class="input-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="nome" required>
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Data de Nascimento</label>
+                            <input type="date" id="data_nascimento" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Nacionalidade</label>
+                            <input type="text" id="nacionalidade">
+                        </div>
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>CC / Passaporte</label>
+                            <input type="text" id="documento_id">
+                        </div>
+                        <div class="input-group">
+                            <label>Validade CC</label>
+                            <input type="date" id="validade_id">
+                        </div>
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>NIF (Finanças)</label>
+                            <input type="text" id="nif">
+                        </div>
+                        <div class="input-group">
+                            <label>N° Utente (Saúde)</label>
+                            <input type="text" id="numero_utente">
+                        </div>
+                    </div>
+                </fieldset>
 
-            <div class="card-atleta" style="border-left-color: #f39c12;">
-                <h3>Treinadores</h3>
-                <p id="total-treinadores" style="font-size: 2rem; font-weight: bold;">0</p>
-            </div>
+                <fieldset>
+                    <legend>2. Família e Contactos</legend>
+                    <div class="input-group">
+                        <label>Nome do Pai</label>
+                        <input type="text" id="nome_pai">
+                    </div>
+                    <div class="input-group">
+                        <label>Nome da Mãe</label>
+                        <input type="text" id="nome_mae">
+                    </div>
+                    <div class="input-group">
+                        <label>Telemóvel de Contacto</label>
+                        <input type="tel" id="telefone" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Morada</label>
+                        <input type="text" id="morada">
+                    </div>
+                    <div class="input-group">
+                        <label>Código Postal</label>
+                        <input type="text" id="cod_postal" placeholder="4900-000">
+                    </div>
+                </fieldset>
 
-            <div class="card-atleta" style="border-left-color: #d32f2f;">
-                <h3>Mensalidades</h3>
-                <p id="total-pendente" style="font-size: 1.2rem; font-weight: bold; color: #d32f2f;">Pendente</p>
-                <small>Controle dia 10</small>
-            </div>
-        </div>
+                <fieldset>
+                    <legend>3. Dados Desportivos</legend>
+                    <div class="input-group">
+                        <label>Escalão (Subdivisões dinâmicas)</label>
+                        <select id="escalao" required>
+                            <option value="">A carregar escalões...</option>
+                        </select>
+                        <small><a href="treinadores.html">Adicionar novo escalão aqui</a></small>
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Licença FPV n.°</label>
+                            <input type="text" id="licenca_fpv">
+                        </div>
+                        <div class="input-group">
+                            <label>Desporto Escolar</label>
+                            <select id="compromisso_escolar">
+                                <option value="Não">Não</option>
+                                <option value="Sim">Sim</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Profissão / Obs (Coluna 17)</label>
+                        <input type="text" id="profissao">
+                    </div>
+                </fieldset>
 
-        <section style="margin-top: 40px;">
-            <h3>Ações Rápidas</h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="atletas.html" class="btn-link">Inscrição de Atleta</a>
-                <a href="treinadores.html" class="btn-link" style="background-color: #1a237e;">Gerir Treinadores/Escalões</a>
-                <a href="financeiro.html" class="btn-link" style="background-color: #555;">Sistema de Cobrança</a>
-            </div>
+                <button type="submit" id="btn-salvar">Gravar Atleta no Sistema</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section id="listagem">
+            <h2>Lista de Atletas Registadas</h2>
+            <div id="lista-cards" class="grid-atletas">
+                </div>
         </section>
     </main>
 
-    <script type="module" src="dashboard.js"></script>
+    <script type="module" src="atletas.js"></script>
 </body>
 </html>
