@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viana Volei - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Viana Volei - Gestão</h1>
+        <nav>
+            <a href="index.html" class="active">Dashboard</a>
+            <a href="atletas.html">Atletas</a>
+            <a href="financeiro.html">Financeiro</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2>Painel Geral</h2>
+        
+        <div class="grid-atletas">
+            <div class="card-atleta" style="border-left-color: #1a237e;">
+                <h3>Atletas Inscritas</h3>
+                <p id="total-atletas" style="font-size: 2rem; font-weight: bold;">...</p>
+            </div>
+
+            <div class="card-atleta" style="border-left-color: #d32f2f;">
+                <h3>Mensalidades em Falta</h3>
+                <p id="total-pendente" style="font-size: 2rem; font-weight: bold; color: #d32f2f;">0</p>
+                <small>Atenção: Dia 10 ultrapassado</small>
+            </div>
+        </div>
+
+        <section style="margin-top: 30px;">
+            <h3>Acesso Rápido</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="atletas.html" class="btn-link">Cadastrar Nova Atleta</a>
+                <a href="financeiro.html" class="btn-link" style="background-color: #555;">Ver Financeiro</a>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>
