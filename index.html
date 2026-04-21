@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viana Volei - Treinadores e Escalões</title>
+    <title>Viana Volei - Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,73 +11,44 @@
     <header>
         <h1>Viana Volei - Gestão</h1>
         <nav>
-            <a href="index.html">Dashboard</a>
+            <a href="index.html" class="active">Dashboard</a>
             <a href="atletas.html">Atletas</a>
-            <a href="treinadores.html" class="active">Treinadores</a>
+            <a href="treinadores.html">Treinadores</a>
             <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
 
     <main class="container">
-        <section id="gestao-escaloes">
-            <h2>Configurar Escalões</h2>
-            <p><small>Adicione subdivisões como "Iniciadas B", "Infantis C", etc.</small></p>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="novo-escalao" placeholder="Ex: Cadetes B" style="flex: 1;">
-                <button id="btn-add-escalao" style="width: auto; padding: 10px 20px;">Adicionar</button>
+        <h2>Painel Geral</h2>
+        
+        <div class="grid-resumo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="card-atleta" style="border-left-color: #1a237e;">
+                <h3>Atletas</h3>
+                <p id="total-atletas" style="font-size: 2rem; font-weight: bold;">0</p>
             </div>
-            <div id="lista-escaloes-tags" style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 20px;">
-                </div>
-        </section>
 
-        <hr>
+            <div class="card-atleta" style="border-left-color: #f39c12;">
+                <h3>Treinadores</h3>
+                <p id="total-treinadores" style="font-size: 2rem; font-weight: bold;">0</p>
+            </div>
 
-        <section id="cadastro-treinador">
-            <h2>Registar Treinador</h2>
-            <form id="form-treinador">
-                <fieldset>
-                    <legend>Dados do Treinador</legend>
-                    <div class="input-group">
-                        <label>Nome Completo</label>
-                        <input type="text" id="t-nome" required>
-                    </div>
-                    <div class="grid-2-col">
-                        <div class="input-group">
-                            <label>NIF</label>
-                            <input type="text" id="t-nif">
-                        </div>
-                        <div class="input-group">
-                            <label>N° Licença</label>
-                            <input type="text" id="t-licenca">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Telemóvel</label>
-                        <input type="tel" id="t-telefone">
-                    </div>
-                    <div class="input-group">
-                        <label>Morada</label>
-                        <input type="text" id="t-morada">
-                    </div>
-                    <div class="input-group">
-                        <label>Vincular ao Escalão</label>
-                        <select id="t-escalao-vinculo">
-                            </select>
-                    </div>
-                </fieldset>
-                <button type="submit">Gravar Treinador</button>
-            </form>
-        </section>
+            <div class="card-atleta" style="border-left-color: #d32f2f;">
+                <h3>Mensalidades</h3>
+                <p id="total-pendente" style="font-size: 1.2rem; font-weight: bold; color: #d32f2f;">Pendente</p>
+                <small>Controle dia 10</small>
+            </div>
+        </div>
 
-        <hr>
-
-        <section id="listagem-treinadores">
-            <h2>Treinadores Ativos</h2>
-            <div id="lista-treinadores" class="grid-atletas">
-                </div>
+        <section style="margin-top: 40px;">
+            <h3>Ações Rápidas</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="atletas.html" class="btn-link">Inscrição de Atleta</a>
+                <a href="treinadores.html" class="btn-link" style="background-color: #1a237e;">Gerir Treinadores/Escalões</a>
+                <a href="financeiro.html" class="btn-link" style="background-color: #555;">Sistema de Cobrança</a>
+            </div>
         </section>
     </main>
 
-    <script type="module" src="treinadores.js"></script>
+    <script type="module" src="dashboard.js"></script>
 </body>
 </html>
