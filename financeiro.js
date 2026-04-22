@@ -24,16 +24,16 @@ if (btnLogout) {
 }
 
 /**
- * Função principal para carregar e renderizar a tabela financeira
+ * Função para carregar os dados financeiros com isolamento de ano
  */
 async function carregarFinanceiro() {
     try {
-        const anoSelecionado = filtroAno.value; // Pega o ano do seletor (2025, 2026...)
+        const anoSelecionado = filtroAno.value; // Pega o ano selecionado (ex: 2027)
 
-        // Feedback visual de carregamento e limpeza de cache visual
-        listaFinanceiro.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">A atualizar dados de ${anoSelecionado}...</p>`;
+        // IMPORTANTE: Limpar a lista visualmente antes de carregar o novo ano
+        listaFinanceiro.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">A carregar dados de ${anoSelecionado}...</p>`;
 
-        // 1. Carregar Escalões para o filtro (apenas se o select estiver vazio)
+        // 1. Carregar Escalões (apenas se o select estiver vazio)
         if (filtroEscalao.options.length === 0) {
             const qEsc = query(collection(db, "escaloes"), orderBy("nome", "asc"));
             const snapEsc = await getDocs(qEsc);
@@ -46,39 +46,41 @@ async function carregarFinanceiro() {
             });
         }
 
-        // 2. Carregar Atletas do Firebase
+        // 2. Carregar Atletas atualizadas
         const qAtl = query(collection(db, "atletas"), orderBy("nome", "asc"));
         const snapAtl = await getDocs(qAtl);
         let atletas = snapAtl.docs.map(d => ({ id: d.id, ...d.data() }));
 
-        // 3. Aplicar Filtros de Escalão
+        // 3. Aplicar Filtro de Escalão
         if (filtroEscalao.value !== "todos") {
             atletas = atletas.filter(a => a.escalao === filtroEscalao.value);
         }
         
-        // 4. Aplicar Filtro de Status (Pendentes no ano selecionado)
+        // 4. Aplicar Filtro de Status (Pendentes APENAS no ano selecionado)
         if (filtroStatus.value === "pendente") {
             atletas = atletas.filter(a => {
                 const pagsAno = (a.pagamentos && a.pagamentos[anoSelecionado]) ? a.pagamentos[anoSelecionado] : {};
+                // Se algum mês deste ano específico for false/null, ele entra na lista de pendentes
                 return meses.some((_, i) => !pagsAno[`mes_${i}`]);
             });
         }
 
-        // 5. Agrupar por Escalão para criar os Acordeões
+        // 5. Agrupar Atletas por Escalão
         const grupos = atletas.reduce((acc, a) => {
             if (!acc[a.escalao]) acc[a.escalao] = [];
             acc[a.escalao].push(a);
             return acc;
         }, {});
 
+        // Limpar novamente antes de renderizar
         listaFinanceiro.innerHTML = "";
 
         if (Object.keys(grupos).length === 0) {
-            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Nenhum registro encontrado para esta seleção.</p>";
+            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Nenhum registro para esta seleção.</p>";
             return;
         }
 
-        // 6. Gerar Visual das Tabelas por Escalão
+        // 6. Criar as Tabelas
         for (const esc in grupos) {
             const seccao = document.createElement('div');
             seccao.className = "escalao-group";
@@ -87,11 +89,9 @@ async function carregarFinanceiro() {
                 <div class="escalao-header">
                     <span style="font-weight:800; font-size:0.9rem;">
                         ${esc.toUpperCase()} 
-                        <small style="color:#888; font-weight:400; margin-left:10px;">
-                            (${grupos[esc].length} Atletas em ${anoSelecionado})
-                        </small>
+                        <small style="color:#888; font-weight:400; margin-left:10px;">(${grupos[esc].length} Atletas - Ano ${anoSelecionado})</small>
                     </span>
-                    <span class="seta" style="transition: 0.3s;">▼</span>
+                    <span class="seta">▼</span>
                 </div>
                 <div class="escalao-content" style="display:none;">
                     <table class="tabela-fin">
@@ -102,12 +102,15 @@ async function carregarFinanceiro() {
                             </tr>
                         </thead>
                         <tbody>
-                            ${grupos[esc].map(a => `
+                            ${grupos[esc].map(a => {
+                                // Pega apenas os pagamentos do ano que está no seletor
+                                const dadosAno = (a.pagamentos && a.pagamentos[anoSelecionado]) ? a.pagamentos[anoSelecionado] : {};
+                                
+                                return `
                                 <tr>
                                     <td>${a.nome.toUpperCase()}</td>
                                     ${meses.map((_, i) => {
-                                        // IMPORTANTE: Lê apenas o sub-objeto do ANO selecionado
-                                        const pago = (a.pagamentos && a.pagamentos[anoSelecionado] && a.pagamentos[anoSelecionado][`mes_${i}`]) === true;
+                                        const pago = dadosAno[`mes_${i}`] === true;
                                         return `
                                             <td>
                                                 <input type="checkbox" class="check-pag" 
@@ -117,39 +120,35 @@ async function carregarFinanceiro() {
                                                     ${pago ? 'checked' : ''}>
                                             </td>`;
                                     }).join('')}
-                                </tr>
-                            `).join('')}
+                                </tr>`;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
 
-            // Lógica do Acordeão (Abrir/Fechar)
+            // Lógica do Acordeão
             const header = seccao.querySelector('.escalao-header');
             const content = seccao.querySelector('.escalao-content');
-            const seta = seccao.querySelector('.seta');
-            
             header.onclick = () => {
-                const isOpen = content.style.display === "block";
-                content.style.display = isOpen ? "none" : "block";
-                seta.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+                content.style.display = content.style.display === "block" ? "none" : "block";
             };
 
-            // Lógica de Gravação Automática (Database)
+            // Salvar alteração no Firebase (Isolado por ano)
             seccao.querySelectorAll('.check-pag').forEach(input => {
                 input.onchange = async (e) => {
                     const id = e.target.dataset.id;
-                    const ano = e.target.dataset.ano;
+                    const ano = e.target.dataset.ano; // O ano que estava no seletor no momento da criação
                     const mes = e.target.dataset.mes;
                     const valor = e.target.checked;
                     
                     try {
                         const ref = doc(db, "atletas", id);
-                        // Atualiza o campo dinâmico: pagamentos.ANO.mes_X
+                        // Grava no caminho: pagamentos > 2027 > mes_0
                         await updateDoc(ref, { [`pagamentos.${ano}.${mes}`]: valor });
                     } catch (err) {
-                        alert("Erro ao gravar no banco de dados.");
-                        e.target.checked = !valor; // Reverte o check visual se der erro
+                        alert("Erro ao guardar dados.");
+                        e.target.checked = !valor; // Reverte se falhar
                     }
                 };
             });
@@ -157,14 +156,14 @@ async function carregarFinanceiro() {
             listaFinanceiro.appendChild(seccao);
         }
     } catch (e) {
-        console.error("Erro no processamento financeiro:", e);
+        console.error("Erro Financeiro:", e);
     }
 }
 
-// Ouvintes de alteração nos filtros
+// Escutadores de eventos
 filtroEscalao.onchange = carregarFinanceiro;
 filtroStatus.onchange = carregarFinanceiro;
-filtroAno.onchange = carregarFinanceiro; // Essencial: Recarrega tudo quando o ano muda
+filtroAno.onchange = carregarFinanceiro; // Força recarregar tudo ao mudar o ano
 
-// Inicialização ao abrir a página
+// Iniciar
 carregarFinanceiro();
