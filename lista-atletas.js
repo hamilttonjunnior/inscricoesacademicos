@@ -3,126 +3,108 @@ import { collection, getDocs, query, where, orderBy, deleteDoc, doc } from "http
 
 const listaAtletasCards = document.getElementById('lista-atletas-cards');
 const filtroEscalao = document.getElementById('filtro-escalao');
+const pesquisaNome = document.querySelector('input[placeholder*="Escreve o nome"]');
 
-// Ícones em SVG para evitar dependências externas
-const iconeLixeira = `
-<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M3 6h18"></path>
-  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-  <line x1="10" y1="11" x2="10" y2="17"></line>
-  <line x1="14" y1="11" x2="14" y2="17"></line>
-</svg>`;
+// Ícones SVG
+const iconeLixeira = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>`;
+const iconeEditar = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`;
+const iconeSeta = `<svg class="seta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s;"><path d="m6 9 6 6 6-6"/></svg>`;
 
-const iconeEditar = `
-<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-</svg>`;
-
-/**
- * Função para carregar as atletas com layout detalhado
- */
-async function carregarAtletas(escalaoFiltro = "") {
+async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
     try {
         let q = query(collection(db, "atletas"), orderBy("nome", "asc"));
         
-        if (escalaoFiltro) {
+        if (escalaoFiltro && escalaoFiltro !== "Todos os Escalões") {
             q = query(collection(db, "atletas"), where("escalao", "==", escalaoFiltro), orderBy("nome", "asc"));
         }
 
         const snap = await getDocs(q);
         listaAtletasCards.innerHTML = "";
 
-        if (snap.empty) {
-            listaAtletasCards.innerHTML = "<p style='text-align:center; color:#888; padding:40px; width:100%;'>Nenhuma atleta encontrada para esta seleção.</p>";
+        let atletas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        if (nomeFiltro) {
+            atletas = atletas.filter(a => a.nome.toLowerCase().includes(nomeFiltro.toLowerCase()));
+        }
+
+        if (atletas.length === 0) {
+            listaAtletasCards.innerHTML = "<p style='text-align:center; padding:30px; color:#888;'>Nenhuma atleta encontrada.</p>";
             return;
         }
 
-        snap.forEach(d => {
-            const a = d.data();
-            const id = d.id;
-
+        atletas.forEach(a => {
             const card = document.createElement('div');
-            card.style.cssText = `
-                display: flex; 
-                justify-content: space-between; 
-                align-items: center; 
-                padding: 20px; 
-                border: 1px solid #eee; 
-                border-radius: 8px; 
-                background: #fff; 
-                margin-bottom: 12px; 
-                box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            `;
-            
+            card.className = "accordion-item";
+            card.style.cssText = "background:#fff; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:10px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.02);";
+
             card.innerHTML = `
-                <div style="flex: 1;">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
-                        <strong style="font-size:1.1rem; color:#1a1a1a; letter-spacing:0.5px;">${a.nome.toUpperCase()}</strong>
-                        <span style="background:#eef2ff; color:#4f46e5; font-size:0.7rem; padding:3px 10px; border-radius:12px; font-weight:800; border:1px solid #e0e7ff;">
-                            ${a.escalao.toUpperCase()}
-                        </span>
+                <div class="accordion-header" style="padding:15px 20px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:#fff; user-select:none;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <strong style="font-size:0.95rem; color:#1a1a1a;">${a.nome.toUpperCase()}</strong>
+                        <span style="background:#f0f4ff; color:#3b82f6; font-size:0.65rem; font-weight:800; padding:2px 8px; border-radius:4px; text-transform:uppercase;">${a.escalao}</span>
                     </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; font-size: 0.85rem; color: #555;">
-                        <span><strong style="color:#888;">TEL:</strong> ${a.telefone || '---'}</span>
-                        <span><strong style="color:#888;">NIF:</strong> ${a.nif || '---'}</span>
-                        <span><strong style="color:#888;">CC/DOC:</strong> ${a.documento_id || '---'}</span>
-                        <span><strong style="color:#888;">NAC:</strong> ${a.nacionalidade || '---'}</span>
-                        <span><strong style="color:#888;">LICENÇA:</strong> ${a.licenca_fpv || '---'}</span>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span style="font-size:0.7rem; color:#aaa; font-weight:600;">CONSULTAR</span>
+                        ${iconeSeta}
                     </div>
                 </div>
-                
-                <div style="display:flex; gap:10px; margin-left:20px;">
-                    <button class="btn-edit" title="Editar" style="background:#f5f5f7; border:1px solid #e5e5e7; padding:10px; border-radius:6px; cursor:pointer; color:#333; transition:0.2s;">
-                        ${iconeEditar}
-                    </button>
-                    <button class="btn-del" title="Eliminar" style="background:#fff0f0; border:1px solid #fecaca; padding:10px; border-radius:6px; cursor:pointer; color:#ff3b30; transition:0.2s;">
-                        ${iconeLixeira}
-                    </button>
+
+                <div class="accordion-content" style="display:none; padding:0 20px 20px 20px; border-top:1px solid #f9f9f9; background:#fafafa;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-size: 0.85rem; color: #4b5563; padding-top:15px;">
+                        <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">TELEMÓVEL</strong> ${a.telefone || '---'}</div>
+                        <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">NIF</strong> ${a.nif || '---'}</div>
+                        <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">DOC. IDENTIFICAÇÃO</strong> ${a.documento_id || '---'}</div>
+                        <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">NACIONALIDADE</strong> ${a.nacionalidade || '---'}</div>
+                        <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">LICENÇA FPV</strong> ${a.licenca_fpv || '---'}</div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                        <button class="btn-edit" style="background:#333; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:0.75rem;">${iconeEditar} EDITAR ATLETA</button>
+                        <button class="btn-del" style="background:#fff; color:#ef4444; border:1px solid #fecaca; padding:8px 15px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:0.75rem;">${iconeLixeira} ELIMINAR</button>
+                    </div>
                 </div>
             `;
 
-            // Efeitos de Hover nos botões
-            const btnEdit = card.querySelector('.btn-edit');
-            btnEdit.onmouseover = () => btnEdit.style.background = "#e5e5e7";
-            btnEdit.onmouseout = () => btnEdit.style.background = "#f5f5f7";
+            // Lógica de Abrir/Fechar
+            const header = card.querySelector('.accordion-header');
+            const content = card.querySelector('.accordion-content');
+            const seta = card.querySelector('.seta-icon');
 
-            const btnDel = card.querySelector('.btn-del');
-            btnDel.onmouseover = () => btnDel.style.background = "#ffcccc";
-            btnDel.onmouseout = () => btnDel.style.background = "#fff0f0";
+            header.onclick = () => {
+                const estaAberto = content.style.display === "block";
+                
+                // Fecha todos os outros antes de abrir este (opcional, para ficar limpo)
+                document.querySelectorAll('.accordion-content').forEach(c => c.style.display = "none");
+                document.querySelectorAll('.seta-icon').forEach(s => s.style.transform = "rotate(0deg)");
 
-            // Evento Editar
-            btnEdit.onclick = () => {
-                window.location.href = `atletas.html?edit=${id}`;
+                if (!estaAberto) {
+                    content.style.display = "block";
+                    seta.style.transform = "rotate(180deg)";
+                }
             };
 
-            // Evento Eliminar
-            btnDel.onclick = async () => {
-                if (confirm(`Deseja realmente remover a atleta ${a.nome}? Esta ação não pode ser desfeita.`)) {
-                    try {
-                        await deleteDoc(doc(db, "atletas", id));
-                        carregarAtletas(filtroEscalao.value);
-                    } catch (error) {
-                        alert("Erro ao eliminar a atleta.");
-                        console.error(error);
-                    }
+            // Ações dos botões internos
+            card.querySelector('.btn-edit').onclick = (e) => {
+                e.stopPropagation(); // Impede de fechar o accordion ao clicar no botão
+                window.location.href = `atletas.html?edit=${a.id}`;
+            };
+
+            card.querySelector('.btn-del').onclick = async (e) => {
+                e.stopPropagation();
+                if (confirm(`Remover atleta ${a.nome}?`)) {
+                    await deleteDoc(doc(db, "atletas", a.id));
+                    carregarAtletas(filtroEscalao.value, pesquisaNome.value);
                 }
             };
 
             listaAtletasCards.appendChild(card);
         });
     } catch (e) {
-        console.error("Erro ao carregar lista de atletas:", e);
+        console.error("Erro ao carregar:", e);
     }
 }
 
-// Ouvinte para o Filtro de Escalão
-if (filtroEscalao) {
-    filtroEscalao.addEventListener('change', (e) => {
-        carregarAtletas(e.target.value);
-    });
-}
+if (filtroEscalao) filtroEscalao.onchange = (e) => carregarAtletas(e.target.value, pesquisaNome.value);
+if (pesquisaNome) pesquisaNome.oninput = (e) => carregarAtletas(filtroEscalao.value, e.target.value);
 
-// Inicialização da página
 carregarAtletas();
