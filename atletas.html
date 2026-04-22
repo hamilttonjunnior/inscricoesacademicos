@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atletas - Viana Volei</title>
+    <title>Inscrição de Atletas - Viana Volei</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,33 +17,125 @@
             <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
+
     <main class="container">
-        <form id="form-atleta">
-            <fieldset>
-                <legend>Dados Federados</legend>
-                <div class="input-group"><label>Nome Completo</label><input type="text" id="nome" required></div>
-                <div class="grid-2-col">
-                    <div class="input-group"><label>Data Nascimento</label><input type="date" id="data_nasc" required></div>
-                    <div class="input-group"><label>NIF</label><input type="text" id="nif"></div>
-                </div>
-                <div class="grid-2-col">
-                    <div class="input-group"><label>Licença FPV</label><input type="text" id="licenca"></div>
-                    <div class="input-group"><label>Telemóvel</label><input type="tel" id="tel" required></div>
-                </div>
-                <div class="grid-2-col">
-                    <div class="input-group"><label>Escalão</label><select id="atleta-escalao" required></select></div>
+        <section>
+            <h2>Ficha de Inscrição Completa (Época 2025-2026)</h2>
+            <form id="form-atleta">
+                
+                <fieldset>
+                    <legend>1. Identificação da Atleta</legend>
                     <div class="input-group">
-                        <label>Mensalidade</label>
-                        <select id="isento">
-                            <option value="false">Pagante (20€)</option>
-                            <option value="true">Isento (Treinador/Atleta)</option>
+                        <label>Nome Completo do/a Atleta</label>
+                        <input type="text" id="nome" required placeholder="Nome completo">
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Data de Nascimento</label>
+                            <input type="date" id="data_nasc" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Nacionalidade</label>
+                            <input type="text" id="nacionalidade" placeholder="Ex: Portuguesa">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Naturalidade</label>
+                        <input type="text" id="naturalidade" placeholder="Local de nascimento">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>2. Documentação e Saúde</legend>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>N° CC / Passaporte / Título Residência</label>
+                            <input type="text" id="doc_id">
+                        </div>
+                        <div class="input-group">
+                            <label>Validade Documento</label>
+                            <input type="date" id="val_id">
+                        </div>
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Número Identificação Fiscal (NIF)</label>
+                            <input type="text" id="nif">
+                        </div>
+                        <div class="input-group">
+                            <label>Número de Utente (Saúde)</label>
+                            <input type="text" id="utente">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>3. Filiação e Contactos</legend>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Nome do Pai</label>
+                            <input type="text" id="nome_pai">
+                        </div>
+                        <div class="input-group">
+                            <label>Nome da Mãe</label>
+                            <input type="text" id="nome_mae">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Contacto Telefónico</label>
+                        <input type="tel" id="tel" required placeholder="Ex: 912 345 678">
+                    </div>
+                    <div class="input-group">
+                        <label>Morada</label>
+                        <input type="text" id="morada" placeholder="Rua, n°, andar...">
+                    </div>
+                    <div class="input-group">
+                        <label>Código Postal</label>
+                        <input type="text" id="cod_postal" placeholder="4900-000">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>4. Informação Desportiva e Financeira</legend>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Escalão de Inscrição</label>
+                            <select id="atleta-escalao" required>
+                                <option value="">A carregar escalões...</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Licença FPV n.°</label>
+                            <input type="text" id="licenca" placeholder="Para atletas já inscritos">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Compromisso Participação Desporto Escolar</label>
+                        <select id="desporto_escolar">
+                            <option value="Não">Não</option>
+                            <option value="Sim">Sim</option>
                         </select>
                     </div>
-                </div>
-            </fieldset>
-            <button type="submit">Gravar Atleta</button>
-        </form>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Tipo de Mensalidade</label>
+                            <select id="isento">
+                                <option value="false">Pagante (20€)</option>
+                                <option value="true">Isento (Treinador/Atleta)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Profissão / Coluna 17</label>
+                            <input type="text" id="profissao">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button type="submit">Finalizar e Gravar Inscrição</button>
+            </form>
+        </section>
     </main>
+
     <script type="module" src="atletas.js"></script>
 </body>
 </html>
