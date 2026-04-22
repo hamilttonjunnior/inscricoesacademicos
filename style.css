@@ -1,4 +1,4 @@
-/* style.css - Minimalista & Clean (Viana Volei Edition - Atualizado) */
+/* style.css - Minimalista & Clean (Viana Volei Edition - Final) */
 :root {
     --bg-body: #ffffff;
     --bg-section: #fafafa;
@@ -106,16 +106,17 @@ input, select {
 }
 input:focus { outline: none; border-color: var(--accent-gray); background: var(--white); }
 
-/* SISTEMA DE ACCORDION (Escalões e Lista Atletas) */
-.accordion { 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    margin-bottom: 12px; 
-    overflow: hidden; 
-    background: #fff; 
+/* SISTEMA DE ACCORDION (Escalões, Atletas e Financeiro) */
+.accordion-item, .escalao-group {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
-.accordion-header { 
+.accordion-header, .escalao-header { 
     padding: 20px; 
     cursor: pointer; 
     display: flex; 
@@ -126,23 +127,53 @@ input:focus { outline: none; border-color: var(--accent-gray); background: var(-
     user-select: none;
 }
 
-.accordion-header:hover { background: var(--bg-section); }
+.accordion-header:hover, .escalao-header:hover { background: var(--bg-section); }
 
-.accordion-content { 
-    display: none; /* Força o estado fechado por padrão */
+.accordion-content, .escalao-content { 
+    display: none; 
     padding: 25px; 
     border-top: 1px solid var(--border-color); 
     background: #ffffff; 
 }
 
-/* Classe de ativação para abrir a caixa */
-.accordion.active .accordion-content { 
-    display: block !important; 
+/* MÓDULO FINANCEIRO - TABELAS ESTILO PLANILHA */
+.tabela-fin {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
 }
 
-.accordion.active .accordion-header { 
-    background: var(--bg-section);
-    border-bottom: 1px solid var(--border-color);
+.tabela-fin th, .tabela-fin td {
+    border: 1px solid #f2f2f7;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.tabela-fin th {
+    background: #f9f9fb;
+    color: #8e8e93;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.tabela-fin td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: #1c1c1e;
+    min-width: 220px;
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 1;
+    border-right: 2px solid #f2f2f7;
+}
+
+.check-pag {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--accent-gray);
 }
 
 /* Botões */
@@ -173,31 +204,36 @@ button:hover, .btn-link:hover { opacity: 0.9; }
 }
 .count-number { font-size: 3rem; font-weight: 800; color: var(--text-main); margin: 0; }
 
-/* Tabelas Internas */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    text-align: left;
-    color: var(--soft-gray);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 10px 5px;
-    border-bottom: 2px solid var(--bg-section);
-}
-
-td {
-    padding: 12px 5px;
-    border-bottom: 1px solid var(--bg-section);
-}
-
 /* Grid Utilitário */
 .grid-2-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 
+/* Footer */
 footer { 
     text-align: center; margin-top: 60px; padding-bottom: 40px; 
     color: var(--soft-gray); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; 
+}
+
+/* REGRAS DE IMPRESSÃO */
+@media print {
+    header, nav, .filtros-area, button, .seta, .seta-icon { 
+        display: none !important; 
+    }
+    .accordion-content, .escalao-content { 
+        display: block !important; 
+        border: none !important;
+        padding: 0 !important;
+    }
+    .accordion-header, .escalao-header { 
+        border: none !important; 
+        font-size: 1.4rem !important;
+        margin-top: 30px;
+        padding-left: 0 !important;
+    }
+    .container { 
+        max-width: 100% !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
+    }
+    body { background: white; }
+    .tabela-fin { border: 1px solid #000; }
 }
