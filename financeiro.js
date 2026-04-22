@@ -1,106 +1,121 @@
-// financeiro.js
 import { db } from './database.js';
-import { collection, getDocs, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, getDocs, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-/**
- * FUNÇÃO PRINCIPAL: Carregar lista de pagamentos
- */
+const listaFinanceiro = document.getElementById('lista-financeiro-escaloes');
+const filtroEscalao = document.getElementById('filtro-escalao-fin');
+const filtroStatus = document.getElementById('filtro-status-fin');
+
+const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
 async function carregarFinanceiro() {
-    const listaFinanceiro = document.getElementById('lista-financeiro');
-    listaFinanceiro.innerHTML = "<p>A carregar registos financeiros...</p>";
-
     try {
-        const q = query(collection(db, "atletas"), orderBy("nome", "asc"));
-        const snapshot = await getDocs(q);
+        // 1. Carregar Escalões para o filtro
+        const qEsc = query(collection(db, "escaloes"), orderBy("nome", "asc"));
+        const snapEsc = await getDocs(qEsc);
+        if (filtroEscalao.options.length === 0) {
+            filtroEscalao.innerHTML = '<option value="todos">Todos os Escalões</option>';
+            snapEsc.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.data().nome; opt.textContent = d.data().nome;
+                filtroEscalao.appendChild(opt);
+            });
+        }
+
+        // 2. Carregar Atletas
+        const qAtl = query(collection(db, "atletas"), orderBy("nome", "asc"));
+        const snapAtl = await getDocs(qAtl);
+        let atletas = snapAtl.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // 3. Aplicar Filtros
+        if (filtroEscalao.value !== "todos") {
+            atletas = atletas.filter(a => a.escalao === filtroEscalao.value);
+        }
         
-        const hoje = new Date();
-        const diaAtual = hoje.getDate();
-        // Nome do mês atual em português para o título
-        const mesAtual = hoje.toLocaleString('pt-PT', { month: 'long' });
+        if (filtroStatus.value === "pendente") {
+            atletas = atletas.filter(a => {
+                const pags = a.pagamentos || {};
+                return meses.some((_, i) => !pags[`mes_${i}`]); // Verifica se algum mês está false/vazio
+            });
+        }
 
-        listaFinanceiro.innerHTML = `<h3>Mensalidades de ${mesAtual}</h3>`;
+        // 4. Agrupar por Escalão
+        const grupos = atletas.reduce((acc, a) => {
+            if (!acc[a.escalao]) acc[a.escalao] = [];
+            acc[a.escalao].push(a);
+            return acc;
+        }, {});
 
-        if (snapshot.empty) {
-            listaFinanceiro.innerHTML += "<p>Nenhuma atleta encontrada para cobrança.</p>";
+        listaFinanceiro.innerHTML = "";
+
+        if (Object.keys(grupos).length === 0) {
+            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Nenhuma informação encontrada para estes filtros.</p>";
             return;
         }
 
-        snapshot.forEach(res => {
-            const atleta = res.data();
-            const id = res.id;
-
-            // LÓGICA DE COBRANÇA
-            const isento = atleta.isento === "true"; 
-            const pago = atleta.status_pagamento === true;
-            const atrasado = !pago && !isento && diaAtual > 10;
-
-            // Criar o elemento do card
-            const card = document.createElement('div');
-            card.className = 'card-atleta';
-
-            // Aplicar cor vermelha se estiver atrasado
-            if (atrasado) {
-                card.style.backgroundColor = "#fff1f1";
-                card.style.borderLeft = "8px solid #d32f2f";
-            } else if (isento) {
-                card.style.borderLeft = "8px solid #9e9e9e"; // Cor cinza para isentos
-            } else if (pago) {
-                card.style.borderLeft = "8px solid #28a745"; // Verde para pago
-            }
-
-            card.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                        <h4 style="margin: 0; color: #002366;">${atleta.nome}</h4>
-                        <small>Escalão: ${atleta.escalao} | <strong>${isento ? 'ISENTO' : 'Valor: 20.00€'}</strong></small>
-                    </div>
-                    
-                    <div>
-                        ${isento ? 
-                            '<span style="color: #666; font-weight: bold;">[Treinador/Atleta]</span>' : 
-                            `<button id="btn-${id}" 
-                                     style="background-color: ${pago ? '#6c757d' : '#28a745'}; padding: 8px 15px; width: auto; font-size: 0.85rem;">
-                                     ${pago ? 'Pago ✓' : 'Marcar como Pago'}
-                             </button>`
-                        }
-                    </div>
+        // 5. Gerar Visual
+        for (const esc in grupos) {
+            const seccao = document.createElement('div');
+            
+            seccao.innerHTML = `
+                <div class="escalao-header">
+                    <span style="font-weight:800; font-size:0.9rem; letter-spacing:0.5px;">${esc.toUpperCase()} <small style="color:#888; font-weight:400; margin-left:10px;">(${grupos[esc].length} Atletas)</small></span>
+                    <span class="seta">▼</span>
+                </div>
+                <div class="escalao-content">
+                    <table class="tabela-fin">
+                        <thead>
+                            <tr>
+                                <th>Nome da Atleta</th>
+                                ${meses.map(m => `<th>${m}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${grupos[esc].map(a => `
+                                <tr>
+                                    <td>${a.nome.toUpperCase()}</td>
+                                    ${meses.map((_, i) => {
+                                        const pago = (a.pagamentos && a.pagamentos[`mes_${i}`]) === true;
+                                        return `<td><input type="checkbox" class="check-pag" data-id="${a.id}" data-mes="mes_${i}" ${pago ? 'checked' : ''}></td>`;
+                                    }).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
                 </div>
             `;
 
-            // Adicionar evento ao botão (apenas se não for isento)
-            if (!isento) {
-                const btn = card.querySelector(`#btn-${id}`);
-                btn.addEventListener('click', async () => {
-                    const novoStatus = !pago; // Inverte o status atual
-                    await alternarPagamento(id, novoStatus);
-                });
-            }
+            // Lógica do Acordeão
+            const header = seccao.querySelector('.escalao-header');
+            const content = seccao.querySelector('.escalao-content');
+            header.onclick = () => {
+                const isOpen = content.style.display === "block";
+                content.style.display = isOpen ? "none" : "block";
+                header.querySelector('.seta').style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+            };
 
-            listaFinanceiro.appendChild(card);
-        });
+            // Lógica do Checkbox (Salvar automático)
+            seccao.querySelectorAll('.check-pag').forEach(input => {
+                input.onchange = async (e) => {
+                    const id = e.target.dataset.id;
+                    const mes = e.target.dataset.mes;
+                    const valor = e.target.checked;
+                    
+                    try {
+                        const ref = doc(db, "atletas", id);
+                        await updateDoc(ref, { [`pagamentos.${mes}`]: valor });
+                    } catch (err) {
+                        alert("Erro ao salvar pagamento.");
+                        e.target.checked = !valor; // Reverte em caso de erro
+                    }
+                };
+            });
 
-    } catch (error) {
-        console.error("Erro no financeiro:", error);
-        listaFinanceiro.innerHTML = "<p>Erro ao carregar dados financeiros.</p>";
-    }
+            listaFinanceiro.appendChild(seccao);
+        }
+
+    } catch (e) { console.error(e); }
 }
 
-/**
- * FUNÇÃO PARA ATUALIZAR PAGAMENTO NO FIREBASE
- */
-async function alternarPagamento(id, novoStatus) {
-    try {
-        const atletaRef = doc(db, "atletas", id);
-        await updateDoc(atletaRef, {
-            status_pagamento: novoStatus
-        });
-        // Recarrega a lista para atualizar as cores e botões
-        carregarFinanceiro();
-    } catch (error) {
-        console.error("Erro ao atualizar pagamento:", error);
-        alert("Não foi possível atualizar o pagamento.");
-    }
-}
-
-// Iniciar
+filtroEscalao.onchange = carregarFinanceiro;
+filtroStatus.onchange = carregarFinanceiro;
 carregarFinanceiro();
