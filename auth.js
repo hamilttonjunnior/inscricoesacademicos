@@ -17,7 +17,6 @@ if (form) {
             localStorage.setItem('viana_auth', 'true');
             localStorage.setItem('viana_user', user);
             
-            // Redirecionamento inicial inteligente
             if (user.includes('secretario')) {
                 window.location.href = 'financeiro.html';
             } else {
@@ -37,13 +36,11 @@ function verificarAcesso() {
     const isAuthenticated = localStorage.getItem('viana_auth') === 'true';
     const userLogado = localStorage.getItem('viana_user');
 
-    // 1. Se não está logado, expulsa para o login
     if (!isAuthenticated && !isLoginPage) {
         window.location.href = 'login.html';
         return;
     }
 
-    // 2. Regras para Secretários
     if (isAuthenticated && userLogado && userLogado.includes('secretario')) {
         const proibidas = ['index.html', 'treinadores.html', 'atletas.html'];
         const tentandoEntrarProibida = proibidas.some(p => path.includes(p));
@@ -52,7 +49,6 @@ function verificarAcesso() {
             window.location.href = 'financeiro.html';
         }
 
-        // Esconder links do menu lateral/topo
         document.addEventListener('DOMContentLoaded', () => {
             const links = document.querySelectorAll('nav a');
             links.forEach(link => {
@@ -65,17 +61,17 @@ function verificarAcesso() {
     }
 }
 
-// --- LÓGICA GLOBAL DO BOTÃO SAIR ---
-document.addEventListener('DOMContentLoaded', () => {
-    const btnLogout = document.getElementById('btn-logout');
-    if (btnLogout) {
-        // Garantir que o clique funcione limpando eventos anteriores
-        btnLogout.onclick = (e) => {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.href = 'login.html';
-        };
+// --- NOVA LÓGICA DO BOTÃO SAIR (MAIS FORTE) ---
+// Usamos o 'window.onclick' para capturar o clique mesmo que o JS do dashboard carregue depois
+window.onclick = function(event) {
+    // Verifica se o que foi clicado é o botão sair ou está dentro dele
+    const btn = event.target.closest('#btn-logout');
+    if (btn) {
+        event.preventDefault();
+        console.log("Sessão encerrada pelo utilizador.");
+        localStorage.clear();
+        window.location.href = 'login.html';
     }
-});
+};
 
 verificarAcesso();
