@@ -3,25 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financeiro - Viana Volei</title>
+    <title>Gestão de Equipas - Viana Volei</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <header>
         <h1>Viana Volei - Gestão</h1>
         <nav>
             <a href="index.html">Dashboard</a>
             <a href="atletas.html">Atletas</a>
             <a href="treinadores.html">Treinadores</a>
-            <a href="escaloes.html">Escalões</a>
-            <a href="financeiro.html" class="active">Financeiro</a>
+            <a href="escaloes.html" class="active">Escalões</a>
+            <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
+
     <main class="container">
-        <section id="lista-financeiro">
-            <p>A carregar pagamentos...</p>
+        <section id="intro-escaloes">
+            <h2>Escalões e Equipas</h2>
+            <p style="color: #666; margin-bottom: 20px;">
+                Consulte abaixo a organização das atletas por escalão. 
+                Clique no nome da equipa para expandir e ver o treinador responsável e a lista de jogadoras.
+            </p>
+            
+            <div id="container-escaloes">
+                <p style="text-align: center; padding: 20px; color: #999;">
+                    A organizar as equipas...
+                </p>
+            </div>
         </section>
+
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <a href="treinadores.html" style="text-decoration: none; font-size: 0.85rem; color: #002366;">
+                + Criar novo escalão ou subdivisão
+            </a>
+            <span style="color: #ccc;">|</span>
+            <a href="atletas.html" style="text-decoration: none; font-size: 0.85rem; color: #002366;">
+                + Inscrever nova atleta
+            </a>
+        </div>
     </main>
-    <script type="module" src="financeiro.js"></script>
+
+    <script type="module" src="escaloes.js"></script>
 </body>
 </html>
