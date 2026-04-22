@@ -200,3 +200,15 @@ footer {
     text-transform: uppercase;
     letter-spacing: 2px;
 }
+
+.btn-editar, .btn-eliminar {
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px;
+    border-radius: 4px !important;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-editar:hover { background: #e5e5e5 !important; }
+.btn-eliminar:hover { background: #fecaca !important; }
