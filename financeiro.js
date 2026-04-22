@@ -1,45 +1,106 @@
+// financeiro.js
 import { db } from './database.js';
-import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, getDocs, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+/**
+ * FUNÇÃO PRINCIPAL: Carregar lista de pagamentos
+ */
 async function carregarFinanceiro() {
-    const lista = document.getElementById('lista-financeiro');
-    const snapshot = await getDocs(collection(db, "atletas"));
-    const hoje = new Date().getDate();
-    lista.innerHTML = "";
+    const listaFinanceiro = document.getElementById('lista-financeiro');
+    listaFinanceiro.innerHTML = "<p>A carregar registos financeiros...</p>";
 
-    snapshot.forEach(res => {
-        const a = res.data();
-        const id = res.id;
-        const card = document.createElement('div');
-        card.className = 'card-atleta';
+    try {
+        const q = query(collection(db, "atletas"), orderBy("nome", "asc"));
+        const snapshot = await getDocs(q);
         
-        // Lógica de Cor: Se passou do dia 10 e não pagou (e não é isento)
-        const faltaPagar = !a.status_pagamento && hoje > 10 && a.isento !== "true";
-        if (faltaPagar) card.style.backgroundColor = "#ffebee";
-        if (a.isento === "true") card.style.borderLeftColor = "#9e9e9e";
+        const hoje = new Date();
+        const diaAtual = hoje.getDate();
+        // Nome do mês atual em português para o título
+        const mesAtual = hoje.toLocaleString('pt-PT', { month: 'long' });
 
-        card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <h3>${a.nome}</h3>
-                    <p>Escalão: ${a.escalao} | ${a.isento === "true" ? "ISENTO" : "20€"}</p>
+        listaFinanceiro.innerHTML = `<h3>Mensalidades de ${mesAtual}</h3>`;
+
+        if (snapshot.empty) {
+            listaFinanceiro.innerHTML += "<p>Nenhuma atleta encontrada para cobrança.</p>";
+            return;
+        }
+
+        snapshot.forEach(res => {
+            const atleta = res.data();
+            const id = res.id;
+
+            // LÓGICA DE COBRANÇA
+            const isento = atleta.isento === "true"; 
+            const pago = atleta.status_pagamento === true;
+            const atrasado = !pago && !isento && diaAtual > 10;
+
+            // Criar o elemento do card
+            const card = document.createElement('div');
+            card.className = 'card-atleta';
+
+            // Aplicar cor vermelha se estiver atrasado
+            if (atrasado) {
+                card.style.backgroundColor = "#fff1f1";
+                card.style.borderLeft = "8px solid #d32f2f";
+            } else if (isento) {
+                card.style.borderLeft = "8px solid #9e9e9e"; // Cor cinza para isentos
+            } else if (pago) {
+                card.style.borderLeft = "8px solid #28a745"; // Verde para pago
+            }
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h4 style="margin: 0; color: #002366;">${atleta.nome}</h4>
+                        <small>Escalão: ${atleta.escalao} | <strong>${isento ? 'ISENTO' : 'Valor: 20.00€'}</strong></small>
+                    </div>
+                    
+                    <div>
+                        ${isento ? 
+                            '<span style="color: #666; font-weight: bold;">[Treinador/Atleta]</span>' : 
+                            `<button id="btn-${id}" 
+                                     style="background-color: ${pago ? '#6c757d' : '#28a745'}; padding: 8px 15px; width: auto; font-size: 0.85rem;">
+                                     ${pago ? 'Pago ✓' : 'Marcar como Pago'}
+                             </button>`
+                        }
+                    </div>
                 </div>
-                <div>
-                    ${a.isento === "true" ? '<span>-</span>' : `
-                        <button onclick="marcarPago('${id}', ${!a.status_pagamento})" style="background:${a.status_pagamento ? '#6c757d' : '#28a745'}">
-                            ${a.status_pagamento ? 'Pago ✓' : 'Marcar Pago'}
-                        </button>
-                    `}
-                </div>
-            </div>
-        `;
-        lista.appendChild(card);
-    });
+            `;
+
+            // Adicionar evento ao botão (apenas se não for isento)
+            if (!isento) {
+                const btn = card.querySelector(`#btn-${id}`);
+                btn.addEventListener('click', async () => {
+                    const novoStatus = !pago; // Inverte o status atual
+                    await alternarPagamento(id, novoStatus);
+                });
+            }
+
+            listaFinanceiro.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Erro no financeiro:", error);
+        listaFinanceiro.innerHTML = "<p>Erro ao carregar dados financeiros.</p>";
+    }
 }
 
-window.marcarPago = async (id, status) => {
-    await updateDoc(doc(db, "atletas", id), { status_pagamento: status });
-    carregarFinanceiro();
-};
+/**
+ * FUNÇÃO PARA ATUALIZAR PAGAMENTO NO FIREBASE
+ */
+async function alternarPagamento(id, novoStatus) {
+    try {
+        const atletaRef = doc(db, "atletas", id);
+        await updateDoc(atletaRef, {
+            status_pagamento: novoStatus
+        });
+        // Recarrega a lista para atualizar as cores e botões
+        carregarFinanceiro();
+    } catch (error) {
+        console.error("Erro ao atualizar pagamento:", error);
+        alert("Não foi possível atualizar o pagamento.");
+    }
+}
 
+// Iniciar
 carregarFinanceiro();
