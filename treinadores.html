@@ -40,57 +40,35 @@
         </section>
 
         <section>
-            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 30px;">
-                <h2 style="margin: 0;">Registo de Treinador / Staff</h2>
-                <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 5px;">Vincule o treinador a um dos escalões criados acima.</p>
-            </div>
-
+            <h2>Registo de Treinador / Staff</h2>
             <form id="form-treinador">
                 <fieldset>
-                    <legend>Identificação Pessoal</legend>
+                    <legend>Identificação</legend>
                     <div class="input-group">
                         <label>Nome Completo</label>
-                        <input type="text" id="t-nome" required placeholder="Nome do Treinador">
+                        <input type="text" id="t-nome" required>
                     </div>
                     <div class="grid-2-col">
-                        <div class="input-group">
-                            <label>Telemóvel</label>
-                            <input type="tel" id="t-telefone" required placeholder="9xxxxxxxx">
-                        </div>
-                        <div class="input-group">
-                            <label>NIF</label>
-                            <input type="text" id="t-nif" placeholder="Número de Contribuinte">
-                        </div>
+                        <div class="input-group"><label>Telemóvel</label><input type="tel" id="t-telefone" required></div>
+                        <div class="input-group"><label>NIF</label><input type="text" id="t-nif"></div>
                     </div>
                 </fieldset>
-
                 <fieldset>
-                    <legend>Vínculo e Qualificações</legend>
+                    <legend>Vínculo</legend>
                     <div class="grid-2-col">
                         <div class="input-group">
-                            <label>Escalão de Responsabilidade</label>
+                            <label>Escalão Principal</label>
                             <select id="t-escalao-vinculo" required>
                                 <option value="">A carregar escalões...</option>
                             </select>
                         </div>
-                        <div class="input-group">
-                            <label>Cédula / Licença de Treinador</label>
-                            <input type="text" id="t-licenca" placeholder="Ex: 123456">
-                        </div>
+                        <div class="input-group"><label>Cédula Treinador</label><input type="text" id="t-licenca"></div>
                     </div>
-                    <div class="input-group">
-                        <label>Morada Completa</label>
-                        <input type="text" id="t-morada" placeholder="Rua, Número e Localidade">
-                    </div>
+                    <div class="input-group"><label>Morada</label><input type="text" id="t-morada"></div>
                 </fieldset>
-
-                <button type="submit" style="width: 100%; margin-top: 20px;">GRAVAR REGISTO DE TREINADOR</button>
+                <button type="submit" style="width: 100%;">GRAVAR TREINADOR</button>
             </form>
         </section>
-
-        <footer style="text-align: center; margin-top: 60px; padding-bottom: 40px; color: var(--soft-gray); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">
-            Viana Volei &bull; Gestão de Staff &bull; 2026
-        </footer>
     </main>
 
     <script type="module" src="treinadores.js"></script>
