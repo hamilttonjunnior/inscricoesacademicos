@@ -137,3 +137,8 @@ formAtleta.addEventListener('submit', async (e) => {
 
 // Executa a inicialização ao abrir
 inicializar();
+
+// Adiciona isto no topo ou no final de cada ficheiro JS
+if (localStorage.getItem('viana_auth') !== 'true') {
+    window.location.href = 'login.html';
+}
