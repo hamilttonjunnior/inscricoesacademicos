@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Viana Volei</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #fafafa;">
+
+    <section style="width: 100%; max-width: 400px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="font-weight: 800; font-size: 1.5rem; letter-spacing: 1px;">VIANA VOLEI</h1>
+            <p style="font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 5px;">Acesso Restrito</p>
+        </div>
+
+        <form id="form-login">
+            <div class="input-group">
+                <label>Utilizador</label>
+                <select id="user-select" style="width: 100%;">
+                    <option value="diogo">Diogo Sendim (Presidente)</option>
+                    <option value="carlos">Carlos Martins (Dir. Técnico)</option>
+                    <option value="secretario1">Secretário 1</option>
+                    <option value="secretario2">Secretário 2</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" style="width: 100%; margin-top: 10px;">ENTRAR NO SISTEMA</button>
+            <p id="error-msg" style="color: red; font-size: 0.75rem; margin-top: 15px; text-align: center; display: none;">Senha incorreta!</p>
+        </form>
+    </section>
+
+    <script src="auth.js"></script>
+</body>
+</html>
