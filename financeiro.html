@@ -5,43 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financeiro - Viana Volei</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo específico para a tabela financeira */
+        .tabela-fin { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .tabela-fin th, .tabela-fin td { border: 1px solid #e5e5e7; padding: 10px; text-align: center; font-size: 0.8rem; }
+        .tabela-fin th { background: #f9f9fb; color: #888; font-weight: 700; text-transform: uppercase; }
+        .tabela-fin td:first-child { text-align: left; font-weight: 600; color: #1d1d1f; min-width: 200px; }
+        
+        .check-pag { width: 18px; height: 18px; cursor: pointer; accent-color: #333; }
+        
+        .escalao-header { 
+            background: #fff; border: 1px solid #e5e5e7; padding: 15px 20px; 
+            border-radius: 8px; cursor: pointer; display: flex; 
+            justify-content: space-between; align-items: center; margin-bottom: 10px;
+            transition: 0.2s;
+        }
+        .escalao-header:hover { background: #f5f5f7; }
+        .escalao-content { display: none; margin-bottom: 20px; overflow-x: auto; background: #fff; border-radius: 0 0 8px 8px; border: 1px solid #e5e5e7; border-top: none; padding: 10px; }
+
+        @media print {
+            header, nav, .filtros-area, button { display: none !important; }
+            .escalao-content { display: block !important; border: none !important; }
+            .escalao-header { border: none !important; font-size: 1.2rem; }
+            body { background: white; }
+            .container { max-width: 100% !important; padding: 0 !important; }
+        }
+    </style>
 </head>
 <body>
 
     <header>
-        <h1>Viana Volei - Gestão</h1>
+        <h1>VIANA VOLEI</h1>
         <nav>
-            <a href="index.html">Dashboard</a>
-            <a href="atletas.html">Atletas</a>
-            <a href="treinadores.html">Treinadores</a>
-            <a href="escaloes.html">Escalões</a>
-            <a href="financeiro.html" class="active">Financeiro</a>
+            <a href="index.html">DASHBOARD</a>
+            <a href="atletas.html">ATLETAS</a>
+            <a href="treinadores.html">TREINADORES</a>
+            <a href="escaloes.html">ESCALÕES</a>
+            <a href="financeiro.html" class="active">FINANCEIRO</a>
         </nav>
     </header>
 
-    <main class="container">
-        <section id="gestao-financeira">
-            <h2>Controlo de Mensalidades</h2>
-            <p style="color: #666; margin-bottom: 20px;">
-                Abaixo encontras a lista de todas as atletas. 
-                Linhas a **vermelho** indicam falta de pagamento após o dia 10 (exceto isentos).
-            </p>
-            
-            <div id="lista-financeiro">
-                <p style="text-align: center; padding: 20px; color: #999;">
-                    A carregar dados financeiros...
-                </p>
+    <main class="container" style="max-width: 1300px;">
+        <section class="filtros-area" style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e5e5e7;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="font-size: 0.7rem; font-weight: 800; color: #888; display: block; margin-bottom: 5px;">FILTRAR ESCALÃO</label>
+                <select id="filtro-escalao-fin" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ddd;"></select>
             </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="font-size: 0.7rem; font-weight: 800; color: #888; display: block; margin-bottom: 5px;">FILTRAR PAGAMENTO</label>
+                <select id="filtro-status-fin" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+                    <option value="todos">Todos os registros</option>
+                    <option value="pendente">Com mensalidades em falta</option>
+                </select>
+            </div>
+            <button onclick="window.print()" style="height: 42px; align-self: flex-end; background: #1d1d1f; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem;">🖨️ IMPRIMIR LISTA</button>
         </section>
 
-        <section id="legenda" style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
-            <h4 style="margin-top: 0;">Legenda:</h4>
-            <div style="display: flex; gap: 20px; font-size: 0.85rem; flex-wrap: wrap;">
-                <span><span style="border-left: 5px solid #28a745; padding-left: 5px;"></span> Pago</span>
-                <span><span style="border-left: 5px solid #d32f2f; background: #fff1f1; padding-left: 5px;"></span> Em falta (Pós dia 10)</span>
-                <span><span style="border-left: 5px solid #9e9e9e; padding-left: 5px;"></span> Isento (Staff)</span>
-            </div>
-        </section>
+        <div id="lista-financeiro-escaloes">
+            <p style="text-align: center; color: #888;">A carregar dados financeiros...</p>
+        </div>
     </main>
 
     <script type="module" src="financeiro.js"></script>
