@@ -9,60 +9,80 @@ const selectEscalao = document.getElementById('t-escalao-vinculo');
 const formTreinador = document.getElementById('form-treinador');
 
 /**
- * 1. CARREGAR E MOSTRAR ESCALÕES (Com botão de eliminar)
- * Busca os escalões no Firebase e cria as tags visuais com o "X" para apagar.
+ * 1. CARREGAR E MOSTRAR ESCALÕES
+ * Busca os escalões no Firebase e cria as tags com o botão de eliminar (X).
  */
 async function carregarEscaloes() {
     try {
         const q = query(collection(db, "escaloes"), orderBy("nome", "asc"));
         const snap = await getDocs(q);
         
-        // Limpar o que existe antes de recarregar
+        // Limpa a lista visual e o menu de seleção
         listaPreview.innerHTML = "";
-        selectEscalao.innerHTML = '<option value="">Selecione o Escalão</option>';
+        if (selectEscalao) {
+            selectEscalao.innerHTML = '<option value="">Selecione o Escalão</option>';
+        }
         
         snap.forEach(d => {
             const id = d.id;
             const nome = d.data().nome;
             
-            // Adicionar a opção ao menu Select do treinador
-            const opt = document.createElement('option');
-            opt.value = nome;
-            opt.textContent = nome;
-            selectEscalao.appendChild(opt);
+            // Adicionar ao Menu Select do Treinador
+            if (selectEscalao) {
+                const opt = document.createElement('option');
+                opt.value = nome;
+                opt.textContent = nome;
+                selectEscalao.appendChild(opt);
+            }
             
-            // Criar a Tag Visual com o botão de eliminar
+            // CRIAR A TAG VISUAL COM O BOTÃO ELIMINAR
             const tagContainer = document.createElement('div');
             tagContainer.style.cssText = `
                 display: flex; 
                 align-items: center; 
                 background: #fafafa; 
-                padding: 6px 12px; 
+                padding: 8px 15px; 
                 border-radius: 4px; 
                 border: 1px solid #e0e0e0;
-                gap: 10px; 
-                margin-bottom: 5px;
+                gap: 12px; 
+                margin-bottom: 10px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             `;
 
             const textoEscalao = document.createElement('span');
-            textoEscalao.style.cssText = "font-size: 0.75rem; font-weight: 600; color: #1a1a1a; text-transform: uppercase;";
+            textoEscalao.style.cssText = "font-size: 0.75rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; letter-spacing: 0.5px;";
             textoEscalao.textContent = nome;
 
-            const btnDelete = document.createElement('span');
-            btnDelete.innerHTML = "&times;"; // Símbolo de fechar (X)
-            btnDelete.style.cssText = "cursor: pointer; color: #dc2626; font-weight: 800; font-size: 1.2rem; line-height: 1; padding: 0 2px;";
-            btnDelete.title = "Eliminar Escalão";
+            // O BOTÃO DE ELIMINAR (O "X")
+            const btnDelete = document.createElement('button');
+            btnDelete.innerHTML = "&times;"; 
+            btnDelete.style.cssText = `
+                background: #fee2e2; 
+                color: #dc2626; 
+                border: 1px solid #fecaca; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-weight: 800; 
+                font-size: 1rem; 
+                line-height: 1; 
+                padding: 2px 6px;
+                transition: 0.2s;
+            `;
             
-            // Lógica para Eliminar o Escalão
+            // Evento ao passar o rato no X
+            btnDelete.onmouseover = () => btnDelete.style.background = "#fca5a5";
+            btnDelete.onmouseout = () => btnDelete.style.background = "#fee2e2";
+
+            // Lógica para Eliminar do Firebase
             btnDelete.onclick = async () => {
-                if (confirm(`Tem a certeza que deseja eliminar o escalão "${nome}"?`)) {
+                if (confirm(`Desejas eliminar o escalão "${nome}"?`)) {
                     try {
                         await deleteDoc(doc(db, "escaloes", id));
-                        alert("Escalão removido com sucesso.");
-                        carregarEscaloes(); // Recarrega a lista e o select automaticamente
+                        alert("Escalão removido!");
+                        carregarEscaloes(); // Recarrega tudo
                     } catch (error) {
                         console.error("Erro ao eliminar:", error);
-                        alert("Erro ao eliminar o escalão.");
+                        alert("Erro ao eliminar. Verifica a consola.");
                     }
                 }
             };
@@ -84,18 +104,17 @@ if (btnAddEscalao) {
         const nome = inputNovoEscalao.value.trim();
         
         if (nome === "") {
-            alert("Por favor, introduza o nome do escalão!");
+            alert("Escreve o nome do escalão!");
             return;
         }
 
         try {
             await addDoc(collection(db, "escaloes"), { nome: nome });
-            inputNovoEscalao.value = ""; // Limpa o campo
-            alert("Escalão '" + nome + "' criado!");
-            carregarEscaloes(); // Atualiza a visualização
+            inputNovoEscalao.value = ""; 
+            carregarEscaloes(); 
         } catch (e) {
             console.error("Erro ao salvar:", e);
-            alert("Erro ao guardar o escalão no banco de dados.");
+            alert("Erro ao guardar. Verifica as permissões do Firebase.");
         }
     };
 }
@@ -113,20 +132,19 @@ if (formTreinador) {
             nif: document.getElementById('t-nif').value,
             escalao: document.getElementById('t-escalao-vinculo').value,
             licenca: document.getElementById('t-licenca').value,
-            morada: document.getElementById('t-morada').value,
             data_registo: new Date().toISOString()
         };
 
         try {
             await addDoc(collection(db, "treinadores"), novoTreinador);
-            alert("Treinador " + novoTreinador.nome + " registado com sucesso!");
+            alert("Treinador " + novoTreinador.nome + " registado!");
             formTreinador.reset();
         } catch (e) {
             console.error("Erro ao registar treinador:", e);
-            alert("Erro técnico ao registar o treinador.");
+            alert("Erro ao registar.");
         }
     });
 }
 
-// Inicializar a página
+// Inicializar
 carregarEscaloes();
