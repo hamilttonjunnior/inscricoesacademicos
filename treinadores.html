@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viana Volei - Treinadores e Escalões</title>
+    <title>Treinadores - Viana Volei</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <header>
         <h1>Viana Volei - Gestão</h1>
         <nav>
@@ -17,67 +16,26 @@
             <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
-
     <main class="container">
-        <section id="gestao-escaloes">
-            <h2>Configurar Escalões</h2>
-            <p><small>Adicione subdivisões como "Iniciadas B", "Infantis C", etc.</small></p>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="novo-escalao" placeholder="Ex: Cadetes B" style="flex: 1;">
-                <button id="btn-add-escalao" style="width: auto; padding: 10px 20px;">Adicionar</button>
+        <fieldset>
+            <legend>Novo Escalão</legend>
+            <div style="display:flex; gap:10px">
+                <input type="text" id="novo-escalao" placeholder="Ex: Iniciadas B" style="flex:1">
+                <button id="btn-add-escalao" style="width:auto">Adicionar</button>
             </div>
-            <div id="lista-escaloes-tags" style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 20px;">
-                </div>
-        </section>
+            <div id="lista-escaloes-tags" style="margin-top:10px"></div>
+        </fieldset>
 
-        <hr>
-
-        <section id="cadastro-treinador">
-            <h2>Registar Treinador</h2>
-            <form id="form-treinador">
-                <fieldset>
-                    <legend>Dados do Treinador</legend>
-                    <div class="input-group">
-                        <label>Nome Completo</label>
-                        <input type="text" id="t-nome" required>
-                    </div>
-                    <div class="grid-2-col">
-                        <div class="input-group">
-                            <label>NIF</label>
-                            <input type="text" id="t-nif">
-                        </div>
-                        <div class="input-group">
-                            <label>N° Licença</label>
-                            <input type="text" id="t-licenca">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Telemóvel</label>
-                        <input type="tel" id="t-telefone">
-                    </div>
-                    <div class="input-group">
-                        <label>Morada</label>
-                        <input type="text" id="t-morada">
-                    </div>
-                    <div class="input-group">
-                        <label>Vincular ao Escalão</label>
-                        <select id="t-escalao-vinculo">
-                            </select>
-                    </div>
-                </fieldset>
+        <form id="form-treinador">
+            <fieldset>
+                <legend>Dados do Treinador</legend>
+                <div class="input-group"><label>Nome</label><input type="text" id="t-nome" required></div>
+                <div class="input-group"><label>Escalão Vinculado</label><select id="t-escalao-vinculo"></select></div>
                 <button type="submit">Gravar Treinador</button>
-            </form>
-        </section>
-
-        <hr>
-
-        <section id="listagem-treinadores">
-            <h2>Treinadores Ativos</h2>
-            <div id="lista-treinadores" class="grid-atletas">
-                </div>
-        </section>
+            </fieldset>
+        </form>
+        <div id="lista-treinadores"></div>
     </main>
-
     <script type="module" src="treinadores.js"></script>
 </body>
 </html>
