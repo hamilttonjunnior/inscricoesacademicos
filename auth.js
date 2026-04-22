@@ -74,7 +74,7 @@ function gerirPermissoes() {
             const links = document.querySelectorAll('nav a');
             links.forEach(link => {
                 const href = link.getAttribute('href');
-                if (paginasProibidas.includes(href)) {
+                if (href && paginasProibidas.some(p => href.includes(p))) {
                     link.remove();
                 }
             });
@@ -85,27 +85,43 @@ function gerirPermissoes() {
     }
 }
 
-// --- 3. BARRA DE UTILIZADOR LOGADO (ABAIXO DO HEADER) ---
+// --- 3. BARRA DE UTILIZADOR LOGADO (VERSÃO REFORÇADA) ---
 function adicionarBarraUsuario() {
     const userLogado = localStorage.getItem('viana_user');
-    const header = document.querySelector('header');
     const isLoginPage = window.location.pathname.includes('login.html');
 
-    if (userLogado && header && !isLoginPage) {
-        const userBar = document.createElement('div');
-        
-        // Estilo discreto
-        userBar.style.backgroundColor = "#fdfdfd";
-        userBar.style.borderBottom = "1px solid #eee";
-        userBar.style.padding = "4px 5%";
-        userBar.style.textAlign = "right";
-        userBar.style.fontSize = "11px";
-        userBar.style.color = "#777";
-        userBar.style.textTransform = "uppercase";
+    if (userLogado && !isLoginPage) {
+        // Usamos um intervalo para garantir que o header foi encontrado
+        const verificarHeader = setInterval(() => {
+            const header = document.querySelector('header');
+            
+            if (header) {
+                clearInterval(verificarHeader);
+                
+                // Evita duplicar a barra
+                if (document.getElementById('barra-user-logado')) return;
 
-        userBar.innerHTML = `Utilizador: <strong style="color: #000;">${userLogado}</strong>`;
+                const userBar = document.createElement('div');
+                userBar.id = 'barra-user-logado';
+                
+                // Estilo discreto e elegante
+                userBar.style.backgroundColor = "#f9f9f9";
+                userBar.style.borderBottom = "1px solid #eee";
+                userBar.style.padding = "6px 5%";
+                userBar.style.textAlign = "right";
+                userBar.style.fontSize = "11px";
+                userBar.style.color = "#666";
+                userBar.style.textTransform = "uppercase";
+                userBar.style.fontFamily = "'Inter', sans-serif";
 
-        header.insertAdjacentElement('afterend', userBar);
+                userBar.innerHTML = `Sessão ativa: <strong style="color: #000;">${userLogado}</strong>`;
+
+                header.insertAdjacentElement('afterend', userBar);
+            }
+        }, 100);
+
+        // Para de tentar após 5 segundos
+        setTimeout(() => clearInterval(verificarHeader), 5000);
     }
 }
 
@@ -119,6 +135,12 @@ window.addEventListener('click', (e) => {
     }
 });
 
-// Inicialização
+// --- INICIALIZAÇÃO ---
 gerirPermissoes();
-document.addEventListener('DOMContentLoaded', adicionarBarraUsuario);
+
+// Tenta adicionar a barra de utilizador de duas formas para garantir
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', adicionarBarraUsuario);
+} else {
+    adicionarBarraUsuario();
+}
