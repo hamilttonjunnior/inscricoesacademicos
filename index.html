@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viana Volei - Dashboard</title>
+    <title>Viana Volei - Gestão</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header>
-        <h1>Viana Volei - Gestão</h1>
+        <h1>Viana Volei</h1>
         <nav>
             <a href="index.html" class="active">Dashboard</a>
             <a href="atletas.html">Atletas</a>
@@ -21,35 +21,33 @@
     </header>
 
     <main class="container">
-        <section class="grid-resumo" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+        <div class="grid-resumo">
             <div class="card-resumo">
                 <h3>Atletas Inscritas</h3>
                 <span id="count-atletas" class="count-number">0</span>
-                <small style="opacity: 0.7; text-transform: uppercase; font-size: 0.7rem;">Época 2025/2026</small>
             </div>
 
-            <div class="card-resumo" style="background: var(--secondary-gradient);">
+            <div class="card-resumo">
                 <h3>Treinadores</h3>
                 <span id="count-treinadores" class="count-number">0</span>
-                <small style="opacity: 0.7; text-transform: uppercase; font-size: 0.7rem;">Staff Técnico</small>
             </div>
-        </section>
+        </div>
 
         <section>
-            <h3>Gestão do Clube</h3>
-            <div class="grid-2-col" style="margin-top: 20px;">
-                <a href="atletas.html" class="btn-link">📝 Nova Inscrição de Atleta</a>
-                <a href="financeiro.html" class="btn-link" style="background: var(--secondary-gradient);">💶 Controlo de Mensalidades</a>
+            <h2>Gestão Rápida</h2>
+            <div class="grid-2-col">
+                <a href="atletas.html" class="btn-link">Registar Atleta</a>
+                <a href="financeiro.html" class="btn-link btn-outline">Consultar Pagamentos</a>
             </div>
             
-            <div class="grid-2-col" style="margin-top: 15px;">
-                <a href="treinadores.html" class="btn-link" style="background: #666; font-size: 0.8rem; padding: 12px;">🏃 Gerir Treinadores</a>
-                <a href="escaloes.html" class="btn-link" style="background: #666; font-size: 0.8rem; padding: 12px;">🏐 Listas por Escalão</a>
+            <div style="margin-top: 25px; display: flex; gap: 20px; justify-content: center;">
+                <a href="treinadores.html" style="color: var(--secondary); font-size: 0.85rem; font-weight: 600;">Configurar Staff</a>
+                <a href="escaloes.html" style="color: var(--secondary); font-size: 0.85rem; font-weight: 600;">Listas de Equipas</a>
             </div>
         </section>
 
-        <footer style="text-align: center; color: #999; font-size: 0.8rem; margin-top: 50px;">
-            Viana Volei Gestão &copy; 2026
+        <footer style="text-align: center; margin-top: 60px; padding-bottom: 40px; color: #bbb; font-size: 0.8rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">
+            Viana Volei &bull; Sistema Administrativo &bull; 2026
         </footer>
     </main>
 
