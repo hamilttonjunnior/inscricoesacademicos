@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição de Atletas - Viana Volei</title>
+    <title>Atletas - Viana Volei</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,50 +17,32 @@
             <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
-
     <main class="container">
-        <section>
-            <h2>Nova Inscrição Federada</h2>
-            <form id="form-atleta">
-                <fieldset>
-                    <legend>Dados Pessoais</legend>
-                    <div class="input-group"><label>Nome Completo</label><input type="text" id="nome" required></div>
-                    <div class="grid-2-col">
-                        <div class="input-group"><label>Data Nascimento</label><input type="date" id="data_nasc" required></div>
-                        <div class="input-group"><label>Nacionalidade</label><input type="text" id="nacionalidade"></div>
-                    </div>
-                </fieldset>
-
-                <fieldset>
-                    <legend>Documentação e Saúde</legend>
-                    <div class="grid-2-col">
-                        <div class="input-group"><label>CC / Passaporte</label><input type="text" id="doc_id"></div>
-                        <div class="input-group"><label>Validade</label><input type="date" id="val_id"></div>
-                    </div>
-                    <div class="grid-2-col">
-                        <div class="input-group"><label>NIF</label><input type="text" id="nif"></div>
-                        <div class="input-group"><label>N° Utente</label><input type="text" id="utente"></div>
-                    </div>
-                </fieldset>
-
-                <fieldset>
-                    <legend>Contactos e Clube</legend>
+        <form id="form-atleta">
+            <fieldset>
+                <legend>Dados Federados</legend>
+                <div class="input-group"><label>Nome Completo</label><input type="text" id="nome" required></div>
+                <div class="grid-2-col">
+                    <div class="input-group"><label>Data Nascimento</label><input type="date" id="data_nasc" required></div>
+                    <div class="input-group"><label>NIF</label><input type="text" id="nif"></div>
+                </div>
+                <div class="grid-2-col">
+                    <div class="input-group"><label>Licença FPV</label><input type="text" id="licenca"></div>
                     <div class="input-group"><label>Telemóvel</label><input type="tel" id="tel" required></div>
-                    <div class="input-group"><label>Morada</label><input type="text" id="morada"></div>
-                    <div class="grid-2-col">
-                        <div class="input-group"><label>Escalão</label><select id="atleta-escalao"></select></div>
-                        <div class="input-group">
-                            <label>Mensalidade</label>
-                            <select id="isento">
-                                <option value="false">Pagante (20€)</option>
-                                <option value="true">Isento (Treinador/Atleta)</option>
-                            </select>
-                        </div>
+                </div>
+                <div class="grid-2-col">
+                    <div class="input-group"><label>Escalão</label><select id="atleta-escalao" required></select></div>
+                    <div class="input-group">
+                        <label>Mensalidade</label>
+                        <select id="isento">
+                            <option value="false">Pagante (20€)</option>
+                            <option value="true">Isento (Treinador/Atleta)</option>
+                        </select>
                     </div>
-                </fieldset>
-                <button type="submit">Gravar Atleta Profissionalmente</button>
-            </form>
-        </section>
+                </div>
+            </fieldset>
+            <button type="submit">Gravar Atleta</button>
+        </form>
     </main>
     <script type="module" src="atletas.js"></script>
 </body>
