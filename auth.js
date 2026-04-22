@@ -29,49 +29,54 @@ if (form) {
     };
 }
 
-// --- PROTEÇÃO DE PÁGINAS E PERMISSÕES ---
-function verificarAcesso() {
+// --- PROTEÇÃO DE ACESSO E ESCONDER MENU ---
+function gerirPermissoes() {
     const path = window.location.pathname;
-    const isLoginPage = path.includes('login.html');
-    const isAuthenticated = localStorage.getItem('viana_auth') === 'true';
     const userLogado = localStorage.getItem('viana_user');
+    const isAuthenticated = localStorage.getItem('viana_auth') === 'true';
 
-    if (!isAuthenticated && !isLoginPage) {
+    // 1. Se não está logado e não é a página de login, expulsa
+    if (!isAuthenticated && !path.includes('login.html')) {
         window.location.href = 'login.html';
         return;
     }
 
-    if (isAuthenticated && userLogado && userLogado.includes('secretario')) {
-        const proibidas = ['index.html', 'treinadores.html', 'atletas.html'];
-        const tentandoEntrarProibida = proibidas.some(p => path.includes(p));
-
-        if (tentandoEntrarProibida) {
+    // 2. Se for Secretário, aplicamos as restrições
+    if (userLogado && userLogado.includes('secretario')) {
+        const paginasProibidas = ['index.html', 'treinadores.html', 'atletas.html'];
+        
+        // Bloqueio de URL (se tentar digitar o link)
+        const tentandoEntrarNoQueNaoPode = paginasProibidas.some(p => path.includes(p));
+        if (tentandoEntrarNoQueNaoPode) {
             window.location.href = 'financeiro.html';
+            return;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // Esconder os links do menu (usamos um intervalo para garantir que o menu já existe)
+        const checkMenu = setInterval(() => {
             const links = document.querySelectorAll('nav a');
-            links.forEach(link => {
-                const href = link.getAttribute('href');
-                if (proibidas.includes(href)) {
-                    link.style.display = 'none';
-                }
-            });
-        });
+            if (links.length > 0) {
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (paginasProibidas.includes(href)) {
+                        link.remove(); // Remove o link completamente do código para ele não clicar sem querer
+                    }
+                });
+                clearInterval(checkMenu); // Para de procurar quando encontrar e remover
+            }
+        }, 50); // Procura a cada 50ms
     }
 }
 
-// --- NOVA LÓGICA DO BOTÃO SAIR (MAIS FORTE) ---
-// Usamos o 'window.onclick' para capturar o clique mesmo que o JS do dashboard carregue depois
+// --- BOTÃO SAIR ---
 window.onclick = function(event) {
-    // Verifica se o que foi clicado é o botão sair ou está dentro dele
     const btn = event.target.closest('#btn-logout');
     if (btn) {
         event.preventDefault();
-        console.log("Sessão encerrada pelo utilizador.");
         localStorage.clear();
         window.location.href = 'login.html';
     }
 };
 
-verificarAcesso();
+// Executar as permissões
+gerirPermissoes();
