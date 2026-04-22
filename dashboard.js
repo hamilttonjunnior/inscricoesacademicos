@@ -23,3 +23,8 @@ async function carregarDados() {
 }
 
 carregarDados();
+
+// Adiciona isto no topo ou no final de cada ficheiro JS
+if (localStorage.getItem('viana_auth') !== 'true') {
+    window.location.href = 'login.html';
+}
