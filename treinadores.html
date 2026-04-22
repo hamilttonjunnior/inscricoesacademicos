@@ -1,1 +1,80 @@
 
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Staff - Viana Volei</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>VIANA VOLEI</h1>
+        <nav>
+            <a href="index.html">DASHBOARD</a>
+            <a href="atletas.html">ATLETAS</a>
+            <a href="treinadores.html" class="active">TREINADORES</a>
+            <a href="escaloes.html">ESCALÕES</a>
+            <a href="financeiro.html">FINANCEIRO</a>
+        </nav>
+    </header>
+
+    <main class="container" style="max-width: 1200px;">
+        
+        <section style="margin-bottom: 25px; padding: 25px;">
+            <h2 style="font-size: 0.85rem; margin-bottom: 15px;">CONFIGURAÇÃO DE ESCALÕES</h2>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="novo-escalao" placeholder="Novo Escalão" style="padding: 10px; flex: 1; max-width: 300px;">
+                <button id="btn-add-escalao" style="padding: 12px 25px; font-size: 0.75rem;">ADICIONAR</button>
+                <div id="lista-escaloes-preview" style="display: flex; gap: 10px; flex-wrap: wrap; margin-left: 10px;"></div>
+            </div>
+        </section>
+
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; align-items: start;">
+            
+            <section style="padding: 30px;">
+                <h2 id="titulo-form-treinador">REGISTO DE STAFF</h2>
+                <form id="form-treinador" style="margin-top: 20px;">
+                    <input type="hidden" id="treinador-id">
+                    <div class="input-group">
+                        <label>NOME COMPLETO</label>
+                        <input type="text" id="t-nome" required>
+                    </div>
+                    <div class="input-group">
+                        <label>TELEMÓVEL</label>
+                        <input type="tel" id="t-telefone" required>
+                    </div>
+                    <div class="input-group">
+                        <label>ESCALÃO</label>
+                        <select id="t-escalao-vinculo" required>
+                            <option value="">Selecione o Escalão</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>CÉDULA/LICENÇA</label>
+                        <input type="text" id="t-licenca">
+                    </div>
+                    <div id="area-botoes-treinador">
+                        <button type="submit" id="btn-gravar-t" style="width: 100%; margin-top: 10px;">GRAVAR TREINADOR</button>
+                    </div>
+                    <div id="botoes-edicao-t" style="display: none; gap: 10px; margin-top: 10px;">
+                        <button type="button" id="btn-atualizar-t" style="flex: 2; background: #333;">ATUALIZAR DADOS</button>
+                        <button type="button" id="btn-cancelar-t" style="flex: 1; background: #eee; color: #333; border: 1px solid #ccc;">X</button>
+                    </div>
+                </form>
+            </section>
+
+            <section style="padding: 30px;">
+                <h2 style="border-bottom: 1px solid #eee; padding-bottom: 15px;">EQUIPA TÉCNICA CADASTRADA</h2>
+                <div id="lista-treinadores-cards" style="display: grid; gap: 12px; margin-top: 25px;">
+                    <p style="color: #888; text-align: center;">A carregar treinadores...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script type="module" src="treinadores.js"></script>
+</body>
+</html>
