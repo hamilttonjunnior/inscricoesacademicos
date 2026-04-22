@@ -1,59 +1,71 @@
+/* style.css - Versão Cinza Degradê Premium */
 :root {
-    --primary: #000000;       /* Preto Puro */
-    --secondary: #333333;     /* Cinza Escuro */
-    --accent: #666666;        /* Cinza Médio */
-    --light: #f4f4f4;         /* Cinza Clarinho para fundos */
+    /* Degradês de Cinza */
+    --primary-gradient: linear-gradient(145deg, #444444 0%, #1a1a1a 100%);
+    --secondary-gradient: linear-gradient(145deg, #666666 0%, #333333 100%);
+    --accent-gradient: linear-gradient(145deg, #888888 0%, #555555 100%);
+    
+    --light-bg: #f5f5f5;
     --white: #ffffff;
-    --success: #222222;       /* Botões pretos para manter o padrão */
-    --danger: #d32f2f;        /* Mantemos o vermelho apenas para alertas críticos */
-    --text: #1a1a1a;
+    --text-main: #222222;
+    --text-muted: #666666;
+    --danger: #d32f2f;
+    --success: #2e7d32;
 }
 
 body { 
-    font-family: 'Inter', -apple-system, sans-serif; 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
     margin: 0; 
-    background-color: var(--light); 
-    color: var(--text); 
-    line-height: 1.6;
+    background-color: var(--light-bg); 
+    color: var(--text-main); 
+    -webkit-font-smoothing: antialiased;
 }
 
+/* Header e Navegação */
 header { 
-    background: var(--primary); 
+    background: var(--primary-gradient); 
     color: var(--white); 
-    padding: 1.5rem; 
+    padding: 1.5rem 1rem; 
     text-align: center; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+    border-bottom: 2px solid #555;
+}
+
+header h1 { 
+    margin: 0; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    font-size: 1.5rem;
 }
 
 nav { 
     margin-top: 15px; 
     display: flex; 
     justify-content: center; 
-    gap: 15px; 
+    gap: 12px; 
     flex-wrap: wrap; 
 }
 
 nav a { 
-    color: #999; 
+    color: #bbb; 
     text-decoration: none; 
-    font-size: 0.9rem; 
-    padding: 8px 15px; 
-    border-radius: 5px; 
+    font-size: 0.8rem; 
+    padding: 8px 14px; 
+    border-radius: 4px; 
     transition: 0.3s; 
     text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 600;
 }
 
 nav a.active { 
     color: var(--white); 
     background: rgba(255,255,255,0.1); 
-    font-weight: bold; 
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
 }
 
-nav a:hover {
-    color: var(--white);
-}
+nav a:hover { color: var(--white); }
 
+/* Content Layout */
 .container { 
     max-width: 1000px; 
     margin: 30px auto; 
@@ -63,117 +75,83 @@ nav a:hover {
 section { 
     background: var(--white); 
     padding: 30px; 
-    border-radius: 0px; /* Bordas retas dão um ar mais moderno/minimalista */
-    border: 1px solid #ddd;
+    border-radius: 12px; 
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
     margin-bottom: 30px; 
 }
 
 h2, h3 { 
-    color: var(--primary); 
+    color: #1a1a1a; 
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-left: 5px solid var(--primary);
+    border-left: 6px solid #444;
     padding-left: 15px;
+    margin-top: 0;
 }
 
-/* Formulários */
-fieldset { 
-    border: 1px solid #eee; 
-    padding: 20px; 
-    margin-bottom: 20px; 
+/* Dashboard Cards */
+.grid-resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
 }
 
-legend { 
-    font-weight: bold; 
-    text-transform: uppercase; 
-    font-size: 0.8rem;
-    color: var(--secondary);
+.card-resumo {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transition: 0.3s;
 }
 
-.input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+.card-resumo:hover { transform: translateY(-5px); }
 
-label { 
-    font-size: 0.75rem; 
-    margin-bottom: 5px; 
-    font-weight: 700; 
-    color: var(--secondary); 
-    text-transform: uppercase;
-}
-
-input, select { 
-    padding: 12px; 
-    border: 1px solid #ccc; 
-    border-radius: 0px; 
-    font-size: 1rem; 
-    background: #fff;
-}
-
-input:focus {
-    border-color: var(--primary);
-    outline: none;
-}
-
-/* Botões */
-button { 
-    background: var(--primary); 
-    color: var(--white); 
-    padding: 15px; 
+.card-resumo h3 { 
+    color: #ccc; 
     border: none; 
-    border-radius: 0px; 
-    font-weight: bold; 
-    text-transform: uppercase;
-    cursor: pointer; 
-    transition: 0.3s; 
+    padding: 0; 
+    font-size: 0.9rem; 
+    margin-bottom: 10px;
 }
 
-button:hover { 
-    background: var(--secondary); 
+.count-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0;
+    display: block;
 }
 
-.btn-link { 
-    display: block; 
-    padding: 20px; 
-    background: var(--primary); 
+/* Buttons */
+.btn-link, button { 
+    background: var(--primary-gradient); 
     color: var(--white); 
-    text-decoration: none; 
-    text-align: center; 
-    font-weight: bold; 
+    padding: 16px; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: 700; 
     text-transform: uppercase;
-}
-
-/* Accordion Preto e Branco */
-.accordion { 
-    border: 1px solid #000; 
-    margin-bottom: 10px; 
-}
-
-.accordion-header { 
-    background: #fff; 
-    padding: 15px; 
     cursor: pointer; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    font-weight: bold; 
+    transition: 0.4s; 
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.accordion.active .accordion-header {
-    background: var(--primary);
-    color: var(--white);
+.btn-link:hover, button:hover { 
+    background: var(--secondary-gradient); 
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
 }
 
-.accordion-content { 
-    display: none; 
-    padding: 15px; 
-    background: #fdfdfd; 
-    border-top: 1px solid #000; 
-}
+/* Forms (Ajuste para Atletas.html) */
+fieldset { border: 1px solid #eee; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
+legend { font-weight: bold; text-transform: uppercase; font-size: 0.75rem; color: var(--text-muted); padding: 0 10px; }
+.input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+label { font-size: 0.75rem; margin-bottom: 6px; font-weight: 700; color: #444; text-transform: uppercase; }
+input, select { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; background: #fff; }
 
-.accordion.active .accordion-content { display: block; }
-
-/* Grid */
-.grid-2-col { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-    gap: 20px; 
-}
+/* Utility */
+.grid-2-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
