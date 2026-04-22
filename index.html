@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Viana Volei - Gestão</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -35,18 +35,18 @@
 
         <section>
             <h2>Gestão Rápida</h2>
-            <div class="grid-2-col">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                 <a href="atletas.html" class="btn-link">Registar Atleta</a>
                 <a href="financeiro.html" class="btn-link btn-outline">Consultar Pagamentos</a>
             </div>
             
-            <div style="margin-top: 25px; display: flex; gap: 20px; justify-content: center;">
-                <a href="treinadores.html" style="color: var(--secondary); font-size: 0.85rem; font-weight: 600;">Configurar Staff</a>
-                <a href="escaloes.html" style="color: var(--secondary); font-size: 0.85rem; font-weight: 600;">Listas de Equipas</a>
+            <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center; border-top: 1px solid #eee; padding-top: 20px;">
+                <a href="treinadores.html" style="color: #888; font-size: 0.75rem; text-decoration: none; font-weight: 600; text-transform: uppercase;">Configurar Staff</a>
+                <a href="escaloes.html" style="color: #888; font-size: 0.75rem; text-decoration: none; font-weight: 600; text-transform: uppercase;">Listas de Equipas</a>
             </div>
         </section>
 
-        <footer style="text-align: center; margin-top: 60px; padding-bottom: 40px; color: #bbb; font-size: 0.8rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">
+        <footer>
             Viana Volei &bull; Sistema Administrativo &bull; 2026
         </footer>
     </main>
