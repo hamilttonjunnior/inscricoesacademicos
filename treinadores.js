@@ -133,3 +133,8 @@ document.getElementById('btn-add-escalao').onclick = async () => {
 
 carregarEscaloes();
 carregarTreinadores();
+
+// Adiciona isto no topo ou no final de cada ficheiro JS
+if (localStorage.getItem('viana_auth') !== 'true') {
+    window.location.href = 'login.html';
+}
