@@ -114,3 +114,7 @@ if (filtroEscalao) filtroEscalao.onchange = (e) => carregarAtletas(e.target.valu
 if (pesquisaNome) pesquisaNome.oninput = (e) => carregarAtletas(filtroEscalao.value, e.target.value);
 
 carregarAtletas();
+// Adiciona isto no topo ou no final de cada ficheiro JS
+if (localStorage.getItem('viana_auth') !== 'true') {
+    window.location.href = 'login.html';
+}
