@@ -237,3 +237,10 @@ footer {
     body { background: white; }
     .tabela-fin { border: 1px solid #000; }
 }
+#barra-user-logado {
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    clear: both;
+}
