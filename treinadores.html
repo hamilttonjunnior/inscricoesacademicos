@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Treinadores - Viana Volei</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <header>
-        <h1>Viana Volei - Gestão</h1>
+        <h1>Viana Volei</h1>
         <nav>
             <a href="index.html">Dashboard</a>
             <a href="atletas.html">Atletas</a>
@@ -17,26 +19,70 @@
             <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
+
     <main class="container">
         <section>
-            <h2>Criar Escalão/Subdivisão</h2>
-            <div class="grid-2-col">
-                <input type="text" id="novo-escalao" placeholder="Ex: Iniciadas B">
-                <button id="btn-add-escalao" style="padding:10px">Adicionar Escalão</button>
-            </div>
-        </section>
-        <form id="form-treinador">
-            <fieldset>
-                <legend>Registar Treinador</legend>
-                <div class="input-group"><label>Nome</label><input type="text" id="t-nome" required></div>
-                <div class="grid-2-col">
-                    <div class="input-group"><label>NIF</label><input type="text" id="t-nif"></div>
-                    <div class="input-group"><label>Escalão Responsável</label><select id="t-escalao-vinculo"></select></div>
+            <h2>Configuração de Escalões</h2>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+                Adiciona os grupos (Ex: Minis, Iniciadas, Cadetes, Veteranos).
+            </p>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+                <div class="input-group" style="margin-bottom: 0;">
+                    <input type="text" id="novo-escalao" placeholder="Nome do escalão (ex: Iniciadas A)">
                 </div>
-                <button type="submit">Gravar Treinador</button>
-            </fieldset>
-        </form>
+                <button id="btn-add-escalao" style="padding: 14px;">ADICIONAR</button>
+            </div>
+            
+            <div id="lista-escaloes-preview" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                </div>
+        </section>
+
+        <section>
+            <h2>Registo de Treinador / Staff</h2>
+            <form id="form-treinador">
+                <fieldset>
+                    <legend>Identificação e Contacto</legend>
+                    <div class="input-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="t-nome" required placeholder="Nome do treinador">
+                    </div>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Telemóvel</label>
+                            <input type="tel" id="t-telefone" required placeholder="9xxxxxxxx">
+                        </div>
+                        <div class="input-group">
+                            <label>NIF</label>
+                            <input type="text" id="t-nif" placeholder="Contribuinte">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Vínculo Desportivo</legend>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Escalão Principal</label>
+                            <select id="t-escalao-vinculo" required>
+                                <option value="">A carregar escalões...</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Cédula de Treinador</label>
+                            <input type="text" id="t-licenca" placeholder="N.° Licença">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Morada</label>
+                        <input type="text" id="t-morada" placeholder="Morada completa">
+                    </div>
+                </fieldset>
+
+                <button type="submit" id="btn-gravar-treinador">GRAVAR TREINADOR</button>
+            </form>
+        </section>
     </main>
+
     <script type="module" src="treinadores.js"></script>
 </body>
 </html>
