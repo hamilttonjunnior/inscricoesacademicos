@@ -119,3 +119,7 @@ async function carregarFinanceiro() {
 filtroEscalao.onchange = carregarFinanceiro;
 filtroStatus.onchange = carregarFinanceiro;
 carregarFinanceiro();
+// Adiciona isto no topo ou no final de cada ficheiro JS
+if (localStorage.getItem('viana_auth') !== 'true') {
+    window.location.href = 'login.html';
+}
