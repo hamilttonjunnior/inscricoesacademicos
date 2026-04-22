@@ -7,13 +7,11 @@ const listaPreview = document.getElementById('lista-escaloes-preview');
 const selectEscalao = document.getElementById('t-escalao-vinculo');
 const formTreinador = document.getElementById('form-treinador');
 
-// Função Principal para Carregar e Mostrar os Escalões com o botão X
 async function carregarEscaloes() {
     try {
         const q = query(collection(db, "escaloes"), orderBy("nome", "asc"));
         const snap = await getDocs(q);
         
-        // Limpar o que existe
         listaPreview.innerHTML = "";
         if (selectEscalao) selectEscalao.innerHTML = '<option value="">Selecione o Escalão</option>';
         
@@ -21,76 +19,58 @@ async function carregarEscaloes() {
             const id = d.id;
             const nome = d.data().nome;
             
-            // 1. Adicionar ao Select do Treinador
             if (selectEscalao) {
                 const opt = document.createElement('option');
-                opt.value = nome;
-                opt.textContent = nome;
+                opt.value = nome; opt.textContent = nome;
                 selectEscalao.appendChild(opt);
             }
             
-            // 2. Criar a Tag (A pílula cinzenta)
+            // Criar a Tag (Pílula)
             const tag = document.createElement('div');
-            tag.style.cssText = "display:flex; align-items:center; gap:10px; background:#eeeeee; padding:8px 15px; border-radius:4px; border:1px solid #cccccc; margin-bottom:5px;";
+            tag.style.cssText = "display:flex; align-items:center; gap:8px; background:#f5f5f7; padding:6px 10px; border-radius:6px; border:1px solid #e5e5e7; margin-bottom:5px;";
             
             // Texto do Nome
             const spanNome = document.createElement('span');
-            spanNome.style.cssText = "font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#1a1a1a;";
+            spanNome.style.cssText = "font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#1d1d1f; letter-spacing:0.3px;";
             spanNome.textContent = nome;
 
-            // Botão de Eliminar (O "X" Vermelho)
+            // Botão de Eliminar (X Pequeno e Elegante)
             const btnDel = document.createElement('button');
-            btnDel.innerHTML = "X"; 
-            btnDel.style.cssText = "background:#ff4d4d; color:white; border:none; border-radius:3px; width:20px; height:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:10px; transition: 0.2s;";
+            btnDel.innerHTML = "&times;"; 
+            btnDel.style.cssText = "background:#ffeded; color:#ff3b30; border:none; border-radius:4px; width:18px; height:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; line-height:1; transition: 0.2s;";
             
-            // Feedback visual ao passar o rato
-            btnDel.onmouseover = () => btnDel.style.background = "#cc0000";
-            btnDel.onmouseout = () => btnDel.style.background = "#ff4d4d";
+            btnDel.onmouseover = () => { btnDel.style.background = "#ff3b30"; btnDel.style.color = "white"; };
+            btnDel.onmouseout = () => { btnDel.style.background = "#ffeded"; btnDel.style.color = "#ff3b30"; };
 
-            // Lógica de clique para apagar do Firebase
             btnDel.onclick = async (e) => {
                 e.preventDefault();
-                if (confirm(`Queres mesmo apagar o escalão "${nome}"?`)) {
+                if (confirm(`Eliminar escalão "${nome}"?`)) {
                     try {
                         await deleteDoc(doc(db, "escaloes", id));
-                        carregarEscaloes(); // Recarrega a lista
-                    } catch (err) {
-                        alert("Erro ao apagar. Tenta novamente.");
-                    }
+                        carregarEscaloes();
+                    } catch (err) { alert("Erro ao apagar."); }
                 }
             };
 
-            // Montar e Injetar no HTML
             tag.appendChild(spanNome);
             tag.appendChild(btnDel);
             listaPreview.appendChild(tag);
         });
-
-    } catch (e) {
-        console.error("Erro ao carregar escalões:", e);
-    }
+    } catch (e) { console.error(e); }
 }
 
-// Evento para Adicionar Novo Escalão
 if (btnAddEscalao) {
     btnAddEscalao.onclick = async () => {
         const nome = inputNovoEscalao.value.trim();
-        if (!nome) {
-            alert("Escreve o nome do escalão!");
-            return;
-        }
-        
+        if (!nome) return;
         try {
             await addDoc(collection(db, "escaloes"), { nome: nome });
             inputNovoEscalao.value = "";
             carregarEscaloes();
-        } catch (e) {
-            alert("Erro ao salvar no Firebase.");
-        }
+        } catch (e) { alert("Erro ao salvar."); }
     };
 }
 
-// Evento para Gravar Treinador
 if (formTreinador) {
     formTreinador.onsubmit = async (e) => {
         e.preventDefault();
@@ -105,13 +85,10 @@ if (formTreinador) {
         };
         try {
             await addDoc(collection(db, "treinadores"), dados);
-            alert("Treinador gravado com sucesso!");
+            alert("Treinador gravado!");
             formTreinador.reset();
-        } catch (e) {
-            alert("Erro ao registar treinador.");
-        }
+        } catch (e) { alert("Erro ao registar."); }
     };
 }
 
-// Iniciar a página
 carregarEscaloes();
