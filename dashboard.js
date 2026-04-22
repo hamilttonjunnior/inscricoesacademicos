@@ -1,6 +1,23 @@
 import { db } from './database.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// --- 1. BLOQUEIO DE ACESSO (PROTEÇÃO) ---
+if (localStorage.getItem('viana_auth') !== 'true') {
+    window.location.href = 'login.html';
+}
+
+// --- 2. LÓGICA DO BOTÃO SAIR ---
+const btnLogout = document.getElementById('btn-logout');
+if (btnLogout) {
+    btnLogout.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('viana_auth');
+        localStorage.removeItem('viana_user');
+        window.location.href = 'login.html';
+    });
+}
+
+// --- 3. CARREGAMENTO DE DADOS DO DASHBOARD ---
 async function carregarDados() {
     try {
         console.log("Tentando conectar ao Firebase...");
@@ -23,8 +40,3 @@ async function carregarDados() {
 }
 
 carregarDados();
-
-// Adiciona isto no topo ou no final de cada ficheiro JS
-if (localStorage.getItem('viana_auth') !== 'true') {
-    window.location.href = 'login.html';
-}
