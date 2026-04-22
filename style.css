@@ -1,38 +1,179 @@
 :root {
-    --primary: #002366;
-    --secondary: #f39c12;
-    --success: #28a745;
-    --danger: #d32f2f;
-    --bg: #f8f9fa;
-    --text: #333;
+    --primary: #000000;       /* Preto Puro */
+    --secondary: #333333;     /* Cinza Escuro */
+    --accent: #666666;        /* Cinza Médio */
+    --light: #f4f4f4;         /* Cinza Clarinho para fundos */
+    --white: #ffffff;
+    --success: #222222;       /* Botões pretos para manter o padrão */
+    --danger: #d32f2f;        /* Mantemos o vermelho apenas para alertas críticos */
+    --text: #1a1a1a;
 }
 
-body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--text); }
-header { background: var(--primary); color: white; padding: 1rem; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-nav { margin-top: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-nav a { color: #adc6ff; text-decoration: none; font-size: 0.9rem; padding: 5px 10px; border-radius: 4px; transition: 0.3s; }
-nav a.active { color: white; background: rgba(255,255,255,0.15); font-weight: bold; }
+body { 
+    font-family: 'Inter', -apple-system, sans-serif; 
+    margin: 0; 
+    background-color: var(--light); 
+    color: var(--text); 
+    line-height: 1.6;
+}
 
-.container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
-h2 { color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+header { 
+    background: var(--primary); 
+    color: var(--white); 
+    padding: 1.5rem; 
+    text-align: center; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+}
 
-fieldset { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-legend { font-weight: bold; color: var(--primary); padding: 0 10px; }
+nav { 
+    margin-top: 15px; 
+    display: flex; 
+    justify-content: center; 
+    gap: 15px; 
+    flex-wrap: wrap; 
+}
 
-.grid-2-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+nav a { 
+    color: #999; 
+    text-decoration: none; 
+    font-size: 0.9rem; 
+    padding: 8px 15px; 
+    border-radius: 5px; 
+    transition: 0.3s; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+nav a.active { 
+    color: var(--white); 
+    background: rgba(255,255,255,0.1); 
+    font-weight: bold; 
+}
+
+nav a:hover {
+    color: var(--white);
+}
+
+.container { 
+    max-width: 1000px; 
+    margin: 30px auto; 
+    padding: 0 20px; 
+}
+
+section { 
+    background: var(--white); 
+    padding: 30px; 
+    border-radius: 0px; /* Bordas retas dão um ar mais moderno/minimalista */
+    border: 1px solid #ddd;
+    margin-bottom: 30px; 
+}
+
+h2, h3 { 
+    color: var(--primary); 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-left: 5px solid var(--primary);
+    padding-left: 15px;
+}
+
+/* Formulários */
+fieldset { 
+    border: 1px solid #eee; 
+    padding: 20px; 
+    margin-bottom: 20px; 
+}
+
+legend { 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    font-size: 0.8rem;
+    color: var(--secondary);
+}
+
 .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-label { font-size: 0.85rem; margin-bottom: 5px; font-weight: 600; color: #666; }
-input, select { padding: 12px; border: 2px solid #edf2f7; border-radius: 8px; font-size: 1rem; }
 
-button { background: var(--success); color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; }
-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3); }
+label { 
+    font-size: 0.75rem; 
+    margin-bottom: 5px; 
+    font-weight: 700; 
+    color: var(--secondary); 
+    text-transform: uppercase;
+}
 
-.btn-link { display: block; padding: 20px; background: var(--success); color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; }
+input, select { 
+    padding: 12px; 
+    border: 1px solid #ccc; 
+    border-radius: 0px; 
+    font-size: 1rem; 
+    background: #fff;
+}
 
-/* Accordion */
-.accordion { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; background: white; }
-.accordion-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; transition: 0.2s; }
-.accordion-header:hover { background: #f9f9f9; }
-.accordion-content { display: none; padding: 15px; border-top: 1px solid #eee; background: #fdfdfd; }
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* Botões */
+button { 
+    background: var(--primary); 
+    color: var(--white); 
+    padding: 15px; 
+    border: none; 
+    border-radius: 0px; 
+    font-weight: bold; 
+    text-transform: uppercase;
+    cursor: pointer; 
+    transition: 0.3s; 
+}
+
+button:hover { 
+    background: var(--secondary); 
+}
+
+.btn-link { 
+    display: block; 
+    padding: 20px; 
+    background: var(--primary); 
+    color: var(--white); 
+    text-decoration: none; 
+    text-align: center; 
+    font-weight: bold; 
+    text-transform: uppercase;
+}
+
+/* Accordion Preto e Branco */
+.accordion { 
+    border: 1px solid #000; 
+    margin-bottom: 10px; 
+}
+
+.accordion-header { 
+    background: #fff; 
+    padding: 15px; 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    font-weight: bold; 
+}
+
+.accordion.active .accordion-header {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.accordion-content { 
+    display: none; 
+    padding: 15px; 
+    background: #fdfdfd; 
+    border-top: 1px solid #000; 
+}
+
 .accordion.active .accordion-content { display: block; }
+
+/* Grid */
+.grid-2-col { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    gap: 20px; 
+}
