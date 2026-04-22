@@ -5,7 +5,7 @@ const listaAtletasCards = document.getElementById('lista-atletas-cards');
 const filtroEscalao = document.getElementById('filtro-escalao');
 const pesquisaNome = document.querySelector('input[placeholder*="Escreve o nome"]');
 
-// Ícones SVG
+// Ícones SVG para garantir que aparecem sempre
 const iconeLixeira = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>`;
 const iconeEditar = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`;
 const iconeSeta = `<svg class="seta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s;"><path d="m6 9 6 6 6-6"/></svg>`;
@@ -37,6 +37,9 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
             card.className = "accordion-item";
             card.style.cssText = "background:#fff; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:10px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.02);";
 
+            // Formatação da data de nascimento (AAAA-MM-DD para DD/MM/AAAA)
+            const dataNasc = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '---';
+
             card.innerHTML = `
                 <div class="accordion-header" style="padding:15px 20px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:#fff; user-select:none;">
                     <div style="display:flex; align-items:center; gap:12px;">
@@ -50,12 +53,18 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
                 </div>
 
                 <div class="accordion-content" style="display:none; padding:0 20px 20px 20px; border-top:1px solid #f9f9f9; background:#fafafa;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-size: 0.85rem; color: #4b5563; padding-top:15px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; font-size: 0.85rem; color: #4b5563; padding-top:15px;">
+                        <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">DATA NASCIMENTO</strong> ${dataNasc}</div>
                         <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">TELEMÓVEL</strong> ${a.telefone || '---'}</div>
                         <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">NIF</strong> ${a.nif || '---'}</div>
                         <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">DOC. IDENTIFICAÇÃO</strong> ${a.documento_id || '---'}</div>
                         <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">NACIONALIDADE</strong> ${a.nacionalidade || '---'}</div>
                         <div><strong style="color:#9ca3af; font-size:0.7rem; display:block;">LICENÇA FPV</strong> ${a.licenca_fpv || '---'}</div>
+                    </div>
+                    
+                    <div style="margin-top:15px;">
+                        <strong style="color:#9ca3af; font-size:0.7rem; display:block;">MORADA</strong>
+                        <span style="font-size: 0.85rem; color: #4b5563;">${a.morada || 'Morada não registada'}</span>
                     </div>
 
                     <div style="display:flex; gap:10px; margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
@@ -65,7 +74,7 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
                 </div>
             `;
 
-            // Lógica de Abrir/Fechar
+            // Lógica de Abrir/Fechar ao clicar no cabeçalho
             const header = card.querySelector('.accordion-header');
             const content = card.querySelector('.accordion-content');
             const seta = card.querySelector('.seta-icon');
@@ -73,7 +82,7 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
             header.onclick = () => {
                 const estaAberto = content.style.display === "block";
                 
-                // Fecha todos os outros antes de abrir este (opcional, para ficar limpo)
+                // Fecha outros (opcional, remove se quiseres vários abertos ao mesmo tempo)
                 document.querySelectorAll('.accordion-content').forEach(c => c.style.display = "none");
                 document.querySelectorAll('.seta-icon').forEach(s => s.style.transform = "rotate(0deg)");
 
@@ -83,15 +92,15 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
                 }
             };
 
-            // Ações dos botões internos
+            // Impedir que o clique nos botões feche o acordeão
             card.querySelector('.btn-edit').onclick = (e) => {
-                e.stopPropagation(); // Impede de fechar o accordion ao clicar no botão
+                e.stopPropagation();
                 window.location.href = `atletas.html?edit=${a.id}`;
             };
 
             card.querySelector('.btn-del').onclick = async (e) => {
                 e.stopPropagation();
-                if (confirm(`Remover atleta ${a.nome}?`)) {
+                if (confirm(`Remover atleta ${a.nome}? Esta ação é permanente.`)) {
                     await deleteDoc(doc(db, "atletas", a.id));
                     carregarAtletas(filtroEscalao.value, pesquisaNome.value);
                 }
@@ -100,11 +109,13 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
             listaAtletasCards.appendChild(card);
         });
     } catch (e) {
-        console.error("Erro ao carregar:", e);
+        console.error("Erro ao carregar atletas:", e);
     }
 }
 
+// Eventos de Filtros
 if (filtroEscalao) filtroEscalao.onchange = (e) => carregarAtletas(e.target.value, pesquisaNome.value);
 if (pesquisaNome) pesquisaNome.oninput = (e) => carregarAtletas(filtroEscalao.value, e.target.value);
 
+// Inicializar carregamento
 carregarAtletas();
