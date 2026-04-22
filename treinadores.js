@@ -25,22 +25,21 @@ async function carregarEscaloes() {
                 selectEscalao.appendChild(opt);
             }
             
-            // Criar a Tag (Pílula)
             const tag = document.createElement('div');
-            tag.style.cssText = "display:flex; align-items:center; gap:8px; background:#f5f5f7; padding:6px 10px; border-radius:6px; border:1px solid #e5e5e7; margin-bottom:5px;";
+            tag.style.cssText = "display:flex; align-items:center; gap:10px; background:#f9f9fb; padding:6px 10px; border-radius:8px; border:1px solid #e1e1e6; margin-bottom:5px;";
             
-            // Texto do Nome
             const spanNome = document.createElement('span');
-            spanNome.style.cssText = "font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#1d1d1f; letter-spacing:0.3px;";
+            spanNome.style.cssText = "font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#1a1a1e; letter-spacing:0.3px;";
             spanNome.textContent = nome;
 
-            // Botão de Eliminar (X Pequeno e Elegante)
+            // Botão de Lixeira Elegante
             const btnDel = document.createElement('button');
-            btnDel.innerHTML = "&times;"; 
-            btnDel.style.cssText = "background:#ffeded; color:#ff3b30; border:none; border-radius:4px; width:18px; height:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; line-height:1; transition: 0.2s;";
+            // Criamos o ícone da lixeira (trash-2)
+            btnDel.innerHTML = `<i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>`; 
+            btnDel.style.cssText = "background:transparent; color:#ff3b30; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:4px; border-radius:4px; transition: 0.2s;";
             
-            btnDel.onmouseover = () => { btnDel.style.background = "#ff3b30"; btnDel.style.color = "white"; };
-            btnDel.onmouseout = () => { btnDel.style.background = "#ffeded"; btnDel.style.color = "#ff3b30"; };
+            btnDel.onmouseover = () => { btnDel.style.background = "#fff0f0"; };
+            btnDel.onmouseout = () => { btnDel.style.background = "transparent"; };
 
             btnDel.onclick = async (e) => {
                 e.preventDefault();
@@ -56,6 +55,10 @@ async function carregarEscaloes() {
             tag.appendChild(btnDel);
             listaPreview.appendChild(tag);
         });
+
+        // Esta linha faz os ícones aparecerem de facto
+        lucide.createIcons();
+
     } catch (e) { console.error(e); }
 }
 
