@@ -33,6 +33,7 @@ async function carregarFinanceiro() {
 
         listaFinanceiro.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">A sincronizar dados...</p>`;
 
+        // Carregar Escalões
         if (filtroEscalao.options.length === 0) {
             const snapEsc = await getDocs(query(collection(db, "escaloes"), orderBy("nome", "asc")));
             filtroEscalao.innerHTML = '<option value="todos">Todos os Escalões</option>';
@@ -50,24 +51,22 @@ async function carregarFinanceiro() {
             atletas = atletas.filter(a => a.escalao === filtroEscalao.value);
         }
         
-        // --- REGRA DE OURO: FILTRO DE PENDÊNCIAS ACUMULADAS ---
+        // --- REGRA: PENDÊNCIA ACUMULADA ---
         if (filtroStatus.value === "pendente") {
             atletas = atletas.filter(a => {
                 const pagsAno = (a.pagamentos && a.pagamentos[anoSelecionado]) ? a.pagamentos[anoSelecionado] : {};
                 
                 if (anoSelecionado < anoCorrente) {
-                    // Anos passados: mostra se deve qualquer mês do ano
                     return meses.some((_, i) => !pagsAno[`mes_${i}`]);
                 } 
                 else if (anoSelecionado === anoCorrente) {
-                    // Ano atual: Verifica de Janeiro até ao Mês Corrente
-                    // Se faltar QUALQUER um destes meses, ela continua na lista
+                    // Verifica se falha QUALQUER mês de Jan até hoje
                     for (let i = 0; i <= mesCorrenteIndex; i++) {
                         if (!pagsAno[`mes_${i}`]) return true; 
                     }
-                    return false; // Está 100% em dia até hoje
+                    return false; // Está tudo pago até ao mês atual
                 }
-                return false;
+                return false; 
             });
         }
 
@@ -80,7 +79,7 @@ async function carregarFinanceiro() {
         listaFinanceiro.innerHTML = "";
 
         if (Object.keys(grupos).length === 0) {
-            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Tudo em dia para este filtro!</p>";
+            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Sem devedoras para este filtro!</p>";
             return;
         }
 
@@ -130,7 +129,7 @@ async function carregarFinanceiro() {
                     try {
                         await updateDoc(doc(db, "atletas", id), { [`pagamentos.${ano}.${mes}`]: valor });
                         
-                        // Recarrega a lista se estivermos no filtro de devedoras para verificar se ela limpou a dívida total
+                        // Se estivermos no filtro de devedoras, recarrega para ver se ela limpou a dívida total
                         if (filtroStatus.value === "pendente") {
                             setTimeout(() => carregarFinanceiro(), 400);
                         }
