@@ -13,28 +13,29 @@
             <a href="index.html">Dashboard</a>
             <a href="atletas.html">Atletas</a>
             <a href="treinadores.html" class="active">Treinadores</a>
+            <a href="escaloes.html">Escalões</a>
             <a href="financeiro.html">Financeiro</a>
         </nav>
     </header>
     <main class="container">
-        <fieldset>
-            <legend>Novo Escalão</legend>
-            <div style="display:flex; gap:10px">
-                <input type="text" id="novo-escalao" placeholder="Ex: Iniciadas B" style="flex:1">
-                <button id="btn-add-escalao" style="width:auto">Adicionar</button>
+        <section>
+            <h2>Criar Escalão/Subdivisão</h2>
+            <div class="grid-2-col">
+                <input type="text" id="novo-escalao" placeholder="Ex: Iniciadas B">
+                <button id="btn-add-escalao" style="padding:10px">Adicionar Escalão</button>
             </div>
-            <div id="lista-escaloes-tags" style="margin-top:10px"></div>
-        </fieldset>
-
+        </section>
         <form id="form-treinador">
             <fieldset>
-                <legend>Dados do Treinador</legend>
+                <legend>Registar Treinador</legend>
                 <div class="input-group"><label>Nome</label><input type="text" id="t-nome" required></div>
-                <div class="input-group"><label>Escalão Vinculado</label><select id="t-escalao-vinculo"></select></div>
+                <div class="grid-2-col">
+                    <div class="input-group"><label>NIF</label><input type="text" id="t-nif"></div>
+                    <div class="input-group"><label>Escalão Responsável</label><select id="t-escalao-vinculo"></select></div>
+                </div>
                 <button type="submit">Gravar Treinador</button>
             </fieldset>
         </form>
-        <div id="lista-treinadores"></div>
     </main>
     <script type="module" src="treinadores.js"></script>
 </body>
