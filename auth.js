@@ -17,7 +17,6 @@ if (form) {
             localStorage.setItem('viana_auth', 'true');
             localStorage.setItem('viana_user', user);
             
-            // Redirecionamento inicial
             if (user.includes('secretario')) {
                 window.location.href = 'financeiro.html';
             } else {
@@ -36,23 +35,19 @@ function gerirPermissoes() {
     const userLogado = localStorage.getItem('viana_user');
     const isAuthenticated = localStorage.getItem('viana_auth') === 'true';
 
-    // Se não estiver logado, manda para o login
     if (!isAuthenticated && !path.includes('login.html')) {
         window.location.href = 'login.html';
         return;
     }
 
-    // Se for Secretário, aplicamos o bloqueio total
-    if (userLogado && userLogado.includes('secretario')) {
+    if (isAuthenticated && userLogado && userLogado.includes('secretario')) {
         const paginasProibidas = ['index.html', 'treinadores.html', 'atletas.html'];
 
-        // Bloqueio de URL (Segurança)
         if (paginasProibidas.some(p => path.includes(p))) {
             window.location.href = 'financeiro.html';
             return;
         }
 
-        // ESCONDER IMEDIATAMENTE VIA CSS (Agressivo)
         const cssRestrito = `
             nav a[href="index.html"], 
             nav a[href="treinadores.html"], 
@@ -69,7 +64,6 @@ function gerirPermissoes() {
         styleSheet.innerText = cssRestrito;
         document.head.appendChild(styleSheet);
 
-        // REMOVER FISICAMENTE DO MENU
         const limparMenu = () => {
             const links = document.querySelectorAll('nav a');
             links.forEach(link => {
@@ -85,26 +79,27 @@ function gerirPermissoes() {
     }
 }
 
-// --- 3. BARRA DE UTILIZADOR LOGADO (VERSÃO REFORÇADA) ---
+// --- 3. BARRA DE UTILIZADOR LOGADO ---
 function adicionarBarraUsuario() {
     const userLogado = localStorage.getItem('viana_user');
+    const isAuthenticated = localStorage.getItem('viana_auth') === 'true';
     const isLoginPage = window.location.pathname.includes('login.html');
 
-    if (userLogado && !isLoginPage) {
-        // Usamos um intervalo para garantir que o header foi encontrado
+    // Só executa se estiver logado e não for a página de login
+    if (isAuthenticated && userLogado && !isLoginPage) {
+        
         const verificarHeader = setInterval(() => {
             const header = document.querySelector('header');
             
             if (header) {
                 clearInterval(verificarHeader);
                 
-                // Evita duplicar a barra
                 if (document.getElementById('barra-user-logado')) return;
 
                 const userBar = document.createElement('div');
                 userBar.id = 'barra-user-logado';
                 
-                // Estilo discreto e elegante
+                // Estilos Inline para garantir prioridade
                 userBar.style.backgroundColor = "#f9f9f9";
                 userBar.style.borderBottom = "1px solid #eee";
                 userBar.style.padding = "6px 5%";
@@ -112,15 +107,16 @@ function adicionarBarraUsuario() {
                 userBar.style.fontSize = "11px";
                 userBar.style.color = "#666";
                 userBar.style.textTransform = "uppercase";
-                userBar.style.fontFamily = "'Inter', sans-serif";
+                userBar.style.fontFamily = "sans-serif";
+                userBar.style.display = "block";
 
                 userBar.innerHTML = `Sessão ativa: <strong style="color: #000;">${userLogado}</strong>`;
 
                 header.insertAdjacentElement('afterend', userBar);
+                console.log("Barra de utilizador injetada para:", userLogado);
             }
         }, 100);
 
-        // Para de tentar após 5 segundos
         setTimeout(() => clearInterval(verificarHeader), 5000);
     }
 }
@@ -138,9 +134,9 @@ window.addEventListener('click', (e) => {
 // --- INICIALIZAÇÃO ---
 gerirPermissoes();
 
-// Tenta adicionar a barra de utilizador de duas formas para garantir
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', adicionarBarraUsuario);
-} else {
+// Força a execução da barra
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
     adicionarBarraUsuario();
+} else {
+    document.addEventListener('DOMContentLoaded', adicionarBarraUsuario);
 }
