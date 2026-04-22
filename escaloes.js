@@ -1,92 +1,92 @@
 import { db } from './database.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-/**
- * FUNÇÃO PRINCIPAL: Carregar e Organizar Equipas
- * Esta função lê escalões, treinadores e atletas e faz o cruzamento de dados.
- */
-async function renderizarEscaloes() {
-    const container = document.getElementById('container-escaloes');
-    container.innerHTML = "<p>A organizar equipas... Por favor, aguarde.</p>";
+const container = document.getElementById('lista-escaloes-complexa');
 
+async function carregarVisaoGeral() {
     try {
-        // 1. Busca todos os dados necessários em paralelo
-        const [snapEsc, snapAtle, snapTrein] = await Promise.all([
-            getDocs(collection(db, "escaloes")),
-            getDocs(collection(db, "atletas")),
-            getDocs(collection(db, "treinadores"))
-        ]);
+        // 1. Procurar todos os dados necessários
+        const snapEscaloes = await getDocs(query(collection(db, "escaloes"), orderBy("nome", "asc")));
+        const snapAtletas = await getDocs(collection(db, "atletas"));
+        const snapTreinadores = await getDocs(collection(db, "treinadores"));
 
-        const listaAtletas = snapAtle.docs.map(d => d.data());
-        const listaTreinadores = snapTrein.docs.map(d => d.data());
+        const atletas = snapAtletas.docs.map(d => d.data());
+        const treinadores = snapTreinadores.docs.map(d => d.data());
 
-        container.innerHTML = ""; // Limpa o carregamento
+        container.innerHTML = "";
 
-        if (snapEsc.empty) {
-            container.innerHTML = "<p>Nenhum escalão criado. Vá à página de Treinadores para começar.</p>";
+        if (snapEscaloes.empty) {
+            container.innerHTML = "<p style='text-align:center; color:#888;'>Nenhum escalão configurado na página de Treinadores.</p>";
             return;
         }
 
-        // 2. Para cada escalão, cria uma "caixa" (Accordion)
-        snapEsc.forEach(docEsc => {
-            const nomeEsc = docEsc.data().nome;
+        // 2. Para cada escalão, criar a box minimizada
+        snapEscaloes.forEach(docEsc => {
+            const nomeEscalao = docEsc.data().nome;
 
-            // Filtra treinador vinculado a este escalão
-            const treinador = listaTreinadores.find(t => t.escalao === nomeEsc);
-            const nomeTreinador = treinador ? treinador.nome : "Sem treinador atribuído";
+            // Filtrar quem pertence a este escalão
+            const treinadorResponsavel = treinadores.find(t => t.escalao === nomeEscalao);
+            const atletasDoGrupo = atletas.filter(a => a.escalao === nomeEscalao);
 
-            // Filtra atletas vinculadas a este escalão
-            const atletasNoEscalao = listaAtletas.filter(a => a.escalao === nomeEsc);
-
-            // 3. Estrutura HTML do Accordion
-            const accordionDiv = document.createElement('div');
-            accordionDiv.className = 'accordion';
-
-            accordionDiv.innerHTML = `
+            const card = document.createElement('div');
+            card.className = 'accordion'; // Usa o mesmo estilo de caixa da lista de atletas
+            
+            card.innerHTML = `
                 <div class="accordion-header">
-                    <div style="display:flex; flex-direction:column">
-                        <span style="font-size: 1.1rem; color: #002366;">${nomeEsc}</span>
-                        <small style="color: #666;">Treinador: ${nomeTreinador}</small>
+                    <div>
+                        <strong style="font-size: 1.1rem;">${nomeEscalao}</strong>
+                        <span style="margin-left: 10px; color: #888; font-size: 0.8rem;">
+                            (${atletasDoGrupo.length} Atletas)
+                        </span>
                     </div>
-                    <span style="font-size: 0.8rem; background: #eee; padding: 2px 8px; border-radius: 10px;">
-                        ${atletasNoEscalao.length} Atletas
-                    </span>
+                    <span>ABRIR GRUPO ▼</span>
                 </div>
                 <div class="accordion-content">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                        <thead>
-                            <tr style="text-align: left; border-bottom: 2px solid #ddd; font-size: 0.85rem;">
-                                <th style="padding: 8px;">Nome da Atleta</th>
-                                <th style="padding: 8px;">Contacto</th>
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 10px; font-size: 0.8rem; color: #555;">TREINADOR / RESPONSÁVEL</h3>
+                        ${treinadorResponsavel ? `
+                            <p style="margin: 0; font-weight: 700;">${treinadorResponsavel.nome}</p>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #666;">
+                                Licença: ${treinadorResponsavel.licenca || 'N/A'} | Tel: ${treinadorResponsavel.telefone}
+                            </p>
+                        ` : '<p style="color: #999; font-style: italic; margin: 0;">Nenhum treinador atribuído.</p>'}
+                    </div>
+
+                    <h3 style="font-size: 0.8rem; color: #555; margin-bottom: 10px;">LISTA DE ATLETAS</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead style="text-align: left; border-bottom: 2px solid #eee;">
+                            <tr>
+                                <th style="padding: 10px 5px;">Nome</th>
+                                <th style="padding: 10px 5px;">Telemóvel</th>
                             </tr>
                         </thead>
-                        <tbody id="lista-corpo-${docEsc.id}">
-                            ${atletasNoEscalao.map(a => `
-                                <tr style="border-bottom: 1px solid #eee; font-size: 0.9rem;">
-                                    <td style="padding: 8px;">${a.nome}</td>
-                                    <td style="padding: 8px;">${a.telefone}</td>
-                                </tr>
-                            `).join('')}
+                        <tbody>
+                            ${atletasDoGrupo.length > 0 ? 
+                                atletasDoGrupo.map(a => `
+                                    <tr style="border-bottom: 1px solid #f5f5f5;">
+                                        <td style="padding: 10px 5px;">${a.nome}</td>
+                                        <td style="padding: 10px 5px;">${a.telefone}</td>
+                                    </tr>
+                                `).join('') 
+                                : '<tr><td colspan="2" style="padding: 20px; color: #999; text-align: center;">Sem atletas inscritas neste escalão.</td></tr>'
+                            }
                         </tbody>
                     </table>
-                    ${atletasNoEscalao.length === 0 ? '<p style="text-align:center; color:#999; margin-top:10px;">Nenhuma atleta inscrita neste escalão.</p>' : ''}
                 </div>
             `;
 
-            // 4. Lógica de abrir e fechar (Toggle)
-            accordionDiv.querySelector('.accordion-header').addEventListener('click', () => {
-                // Fecha outros se quiser (opcional), ou apenas alterna este:
-                accordionDiv.classList.toggle('active');
-            });
+            // Lógica para abrir/fechar (Minimizado por padrão)
+            card.querySelector('.accordion-header').onclick = () => {
+                card.classList.toggle('active');
+            };
 
-            container.appendChild(accordionDiv);
+            container.appendChild(card);
         });
 
-    } catch (error) {
-        console.error("Erro ao carregar escalões:", error);
-        container.innerHTML = "<p>Ocorreu um erro ao carregar os dados.</p>";
+    } catch (e) {
+        console.error("Erro na visão geral:", e);
+        container.innerHTML = "<p>Erro ao carregar os grupos.</p>";
     }
 }
 
-// Inicia a renderização
-renderizarEscaloes();
+carregarVisaoGeral();
