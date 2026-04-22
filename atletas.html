@@ -32,12 +32,15 @@
 
                 <fieldset>
                     <legend>1. Identificação da Atleta</legend>
-                    <div class="input-group"><label>Nome Completo</label><input type="text" id="nome" required></div>
+                    <div class="input-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="nome" required placeholder="Nome completo">
+                    </div>
                     <div class="grid-2-col">
                         <div class="input-group"><label>Data de Nascimento</label><input type="date" id="data_nasc" required></div>
-                        <div class="input-group"><label>Nacionalidade</label><input type="text" id="nacionalidade"></div>
+                        <div class="input-group"><label>Nacionalidade</label><input type="text" id="nacionalidade" placeholder="Ex: Portuguesa"></div>
                     </div>
-                    <div class="input-group"><label>Naturalidade</label><input type="text" id="naturalidade"></div>
+                    <div class="input-group"><label>Naturalidade</label><input type="text" id="naturalidade" placeholder="Concelho"></div>
                 </fieldset>
 
                 <fieldset>
@@ -47,8 +50,8 @@
                         <div class="input-group"><label>Validade</label><input type="date" id="val_id"></div>
                     </div>
                     <div class="grid-2-col">
-                        <div class="input-group"><label>NIF (Contribuinte)</label><input type="text" id="nif"></div>
-                        <div class="input-group"><label>N° Utente de Saúde</label><input type="text" id="utente"></div>
+                        <div class="input-group"><label>NIF</label><input type="text" id="nif"></div>
+                        <div class="input-group"><label>N° Utente Saúde</label><input type="text" id="utente"></div>
                     </div>
                 </fieldset>
 
@@ -73,7 +76,7 @@
                             <label>Situação Financeira</label>
                             <select id="isento">
                                 <option value="false">Pagante (20€/mês)</option>
-                                <option value="true">Isento (Staff / Atleta Interna)</option>
+                                <option value="true">Isento (Staff / Interna)</option>
                             </select>
                         </div>
                     </div>
@@ -81,7 +84,7 @@
                 </fieldset>
 
                 <div id="botoes-salvar">
-                    <button type="submit" id="btn-submit">GRAVAR INSCRIÇÃO COMPLETA</button>
+                    <button type="submit" id="btn-gravar">GRAVAR INSCRIÇÃO COMPLETA</button>
                 </div>
                 <div id="botoes-edicao" style="display: none; gap: 10px; margin-top: 20px;">
                     <button type="button" id="btn-atualizar" style="flex: 2; background: var(--accent-gray);">ATUALIZAR DADOS</button>
