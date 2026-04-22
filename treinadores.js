@@ -11,13 +11,11 @@ const btnGravar = document.getElementById('btn-gravar-t');
 const botoesEdicao = document.getElementById('botoes-edicao-t');
 const treinadorIdOculto = document.getElementById('treinador-id');
 
-// Ícones SVG
+// Ícone Lixeira SVG
 const iconeLixeira = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>`;
+// Ícone Editar SVG
 const iconeEditar = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`;
 
-/**
- * CARREGAR ESCALÕES
- */
 async function carregarEscaloes() {
     try {
         const q = query(collection(db, "escaloes"), orderBy("nome", "asc"));
@@ -49,9 +47,6 @@ async function carregarEscaloes() {
     } catch (e) { console.error(e); }
 }
 
-/**
- * CARREGAR TREINADORES (AQUI ESTÁ A CHAVE)
- */
 async function carregarTreinadores() {
     try {
         const q = query(collection(db, "treinadores"), orderBy("nome", "asc"));
@@ -68,19 +63,18 @@ async function carregarTreinadores() {
             const id = d.id;
 
             const card = document.createElement('div');
-            card.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid #eee; border-radius:6px; background:#fff; box-shadow: 0 1px 3px rgba(0,0,0,0.02);";
+            card.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid #eee; border-radius:6px; background:#fff; margin-bottom:10px;";
             card.innerHTML = `
                 <div>
                     <strong style="font-size:0.9rem; display:block; color:#1a1a1a;">${t.nome}</strong>
                     <small style="color:#888; font-weight:500;">${t.escalao.toUpperCase()} • ${t.telefone}</small>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-edit-t" title="Editar" style="background:#f5f5f7; border:none; padding:8px; border-radius:4px; cursor:pointer; color:#333;">${iconeEditar}</button>
-                    <button class="btn-del-t" title="Eliminar" style="background:#fff0f0; border:none; padding:8px; border-radius:4px; cursor:pointer; color:#ff3b30;">${iconeLixeira}</button>
+                    <button class="btn-edit-t" style="background:#f5f5f7; border:none; padding:8px; border-radius:4px; cursor:pointer; color:#333;">${iconeEditar}</button>
+                    <button class="btn-del-t" style="background:#fff0f0; border:none; padding:8px; border-radius:4px; cursor:pointer; color:#ff3b30;">${iconeLixeira}</button>
                 </div>
             `;
 
-            // Clique Editar
             card.querySelector('.btn-edit-t').onclick = () => {
                 treinadorIdOculto.value = id;
                 document.getElementById('t-nome').value = t.nome;
@@ -91,12 +85,10 @@ async function carregarTreinadores() {
                 tituloForm.innerText = "EDITAR TREINADOR";
                 btnGravar.style.display = 'none';
                 botoesEdicao.style.display = 'flex';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             };
             
-            // Clique Eliminar
             card.querySelector('.btn-del-t').onclick = async () => {
-                if(confirm(`Remover ${t.nome} da equipa técnica?`)) {
+                if(confirm(`Remover ${t.nome}?`)) {
                     await deleteDoc(doc(db, "treinadores", id));
                     carregarTreinadores();
                 }
@@ -104,12 +96,9 @@ async function carregarTreinadores() {
 
             listaTreinadoresCards.appendChild(card);
         });
-    } catch (e) { console.error("Erro ao carregar treinadores:", e); }
+    } catch (e) { console.error(e); }
 }
 
-/**
- * RESETAR FORMULÁRIO
- */
 function resetarForm() {
     formTreinador.reset();
     treinadorIdOculto.value = "";
@@ -120,34 +109,23 @@ function resetarForm() {
 
 document.getElementById('btn-cancelar-t').onclick = () => resetarForm();
 
-/**
- * ATUALIZAR TREINADOR
- */
 document.getElementById('btn-atualizar-t').onclick = async () => {
     const id = treinadorIdOculto.value;
-    if(!id) return;
-    
     const novosDados = {
         nome: document.getElementById('t-nome').value,
         telefone: document.getElementById('t-telefone').value,
         escalao: document.getElementById('t-escalao-vinculo').value,
         licenca: document.getElementById('t-licenca').value
     };
-
-    try {
-        await updateDoc(doc(db, "treinadores", id), novosDados);
-        alert("Dados atualizados com sucesso!");
-        resetarForm();
-        carregarTreinadores();
-    } catch (e) { alert("Erro ao atualizar."); }
+    await updateDoc(doc(db, "treinadores", id), novosDados);
+    alert("Treinador atualizado!");
+    resetarForm();
+    carregarTreinadores();
 };
 
-/**
- * SUBMETER FORMULÁRIO (NOVO OU EDITAR)
- */
 formTreinador.onsubmit = async (e) => {
     e.preventDefault();
-    if (treinadorIdOculto.value) return; // Se tem ID, a lógica de atualizar já trata disso
+    if (treinadorIdOculto.value) return;
 
     const dados = {
         nome: document.getElementById('t-nome').value,
@@ -157,15 +135,12 @@ formTreinador.onsubmit = async (e) => {
         data_registo: new Date().toISOString()
     };
 
-    try {
-        await addDoc(collection(db, "treinadores"), dados);
-        alert("Treinador registado com sucesso!");
-        formTreinador.reset();
-        carregarTreinadores();
-    } catch (e) { alert("Erro ao registar."); }
+    await addDoc(collection(db, "treinadores"), dados);
+    alert("Treinador registado!");
+    formTreinador.reset();
+    carregarTreinadores();
 };
 
-// Botão Adicionar Escalão
 document.getElementById('btn-add-escalao').onclick = async () => {
     const nome = document.getElementById('novo-escalao').value.trim();
     if(nome) {
@@ -175,6 +150,5 @@ document.getElementById('btn-add-escalao').onclick = async () => {
     }
 };
 
-// INICIALIZAR TUDO
 carregarEscaloes();
 carregarTreinadores();
