@@ -4,16 +4,16 @@ import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, getDoc } f
 const formAtleta = document.getElementById('form-atleta');
 const selectEscalao = document.getElementById('atleta-escalao');
 const tituloForm = document.getElementById('titulo-form');
-const btnGravar = document.getElementById('btn-gravar');
 const botoesSalvar = document.getElementById('botoes-salvar');
 const botoesEdicao = document.getElementById('botoes-edicao');
 
-// Função auxiliar para preencher o formulário
-function preencherFormulario(atleta, id) {
-    tituloForm.innerText = "Editar Atleta: " + atleta.nome;
+// Função para preencher os campos e ativar os botões de edição
+function ativarModoEdicao(atleta, id) {
+    tituloForm.innerText = "EDITAR ATLETA: " + atleta.nome.toUpperCase();
     botoesSalvar.style.display = 'none';
     botoesEdicao.style.display = 'flex';
 
+    // Preenche os inputs
     document.getElementById('atleta-id').value = id;
     document.getElementById('nome').value = atleta.nome;
     document.getElementById('data_nasc').value = atleta.data_nascimento || "";
@@ -30,10 +30,14 @@ function preencherFormulario(atleta, id) {
     document.getElementById('atleta-escalao').value = atleta.escalao || "";
     document.getElementById('isento').value = atleta.isento || "Não";
     document.getElementById('licenca').value = atleta.licenca_fpv || "";
+    
+    // Rola para o topo para veres que entrou em modo edição
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// 1. Inicialização: Carrega escalões e verifica URL para Edição
 async function inicializar() {
-    // 1. Carregar Escalões primeiro
+    // Carregar Escalões no Select
     const q = query(collection(db, "escaloes"), orderBy("nome", "asc"));
     const snap = await getDocs(q);
     selectEscalao.innerHTML = '<option value="">Selecione o Escalão</option>';
@@ -44,31 +48,29 @@ async function inicializar() {
         selectEscalao.appendChild(opt);
     });
 
-    // 2. Verificar se existe ID na URL (vindo da lista-atletas)
+    // VERIFICAÇÃO CRÍTICA: Se vier da lista com ?edit=ID na URL
     const urlParams = new URLSearchParams(window.location.search);
-    const idUrl = urlParams.get('edit');
+    const editId = urlParams.get('edit');
 
-    if (idUrl) {
-        const docRef = doc(db, "atletas", idUrl);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            preencherFormulario(docSnap.data(), idUrl);
-        }
-    } else {
-        // 3. Backup: Verificar LocalStorage (como tinhas antes)
-        const dadosEdicao = localStorage.getItem('editandoAtleta');
-        if (dadosEdicao) {
-            const atleta = JSON.parse(dadosEdicao);
-            preencherFormulario(atleta, atleta.id);
+    if (editId) {
+        try {
+            const docRef = doc(db, "atletas", editId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                ativarModoEdicao(docSnap.data(), editId);
+            }
+        } catch (e) {
+            console.error("Erro ao buscar atleta para edição:", e);
         }
     }
 }
 
-// Botão Atualizar (UPDATE)
+// 2. Botão Atualizar (UPDATE)
 document.getElementById('btn-atualizar').onclick = async () => {
     const id = document.getElementById('atleta-id').value;
-    const atletaRef = doc(db, "atletas", id);
+    if (!id) return;
 
+    const atletaRef = doc(db, "atletas", id);
     const dados = {
         nome: document.getElementById('nome').value,
         data_nascimento: document.getElementById('data_nasc').value,
@@ -89,22 +91,21 @@ document.getElementById('btn-atualizar').onclick = async () => {
 
     try {
         await updateDoc(atletaRef, dados);
-        alert("Dados atualizados!");
-        localStorage.removeItem('editandoAtleta');
+        alert("Dados de " + dados.nome + " atualizados com sucesso!");
         window.location.href = 'lista-atletas.html';
     } catch (e) { alert("Erro ao atualizar."); }
 };
 
-// Botão Cancelar
+// 3. Botão Cancelar
 document.getElementById('btn-cancelar').onclick = () => {
-    localStorage.removeItem('editandoAtleta');
     window.location.href = 'lista-atletas.html';
 };
 
-// Gravar Novo (CREATE)
+// 4. Gravar Novo (CREATE)
 formAtleta.addEventListener('submit', async (e) => {
     e.preventDefault();
-    // Se o campo ID estiver preenchido, não é um novo registo
+    
+    // Se estiver em modo edição (ID preenchido), não faz nada aqui
     if (document.getElementById('atleta-id').value) return;
 
     const novaAtleta = {
@@ -129,9 +130,10 @@ formAtleta.addEventListener('submit', async (e) => {
 
     try {
         await addDoc(collection(db, "atletas"), novaAtleta);
-        alert("Gravada com sucesso!");
+        alert("Atleta registada com sucesso!");
         formAtleta.reset();
     } catch (e) { alert("Erro ao gravar."); }
 });
 
+// Executa a inicialização ao abrir
 inicializar();
