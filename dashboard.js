@@ -1,35 +1,25 @@
 import { db } from './database.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-/**
- * FUNÇÃO DE CONTAGEM EM TEMPO REAL
- * Esta função vai ao Firebase, conta quantos documentos existem e atualiza o ecrã.
- */
-async function atualizarResumoDashboard() {
-    // Referências dos elementos no index.html
-    const campoAtletas = document.getElementById('count-atletas');
-    const campoTreinadores = document.getElementById('count-treinadores');
-
+async function carregarDados() {
     try {
-        // 1. Contar Atletas
-        const snapshotAtletas = await getDocs(collection(db, "atletas"));
-        if (campoAtletas) {
-            campoAtletas.innerText = snapshotAtletas.size; // .size retorna o número total
-        }
+        console.log("Tentando conectar ao Firebase...");
+        
+        // Busca Atletas
+        const queryAtletas = await getDocs(collection(db, "atletas"));
+        document.getElementById('count-atletas').innerText = queryAtletas.size;
+        
+        // Busca Treinadores
+        const queryTreinadores = await getDocs(collection(db, "treinadores"));
+        document.getElementById('count-treinadores').innerText = queryTreinadores.size;
 
-        // 2. Contar Treinadores
-        const snapshotTreinadores = await getDocs(collection(db, "treinadores"));
-        if (campoTreinadores) {
-            campoTreinadores.innerText = snapshotTreinadores.size;
-        }
-
-        console.log("Dashboard atualizado com sucesso!");
-
+        console.log("Sucesso: " + queryAtletas.size + " atletas encontradas.");
     } catch (error) {
-        console.error("Erro ao atualizar números do dashboard:", error);
-        if (campoAtletas) campoAtletas.innerText = "!";
+        console.error("Erro detalhado:", error);
+        // Se der erro, o número ficará com um "!" para você saber que falhou
+        document.getElementById('count-atletas').innerText = "!";
+        document.getElementById('count-treinadores').innerText = "!";
     }
 }
 
-// Executa a função assim que a página carrega
-atualizarResumoDashboard();
+carregarDados();
