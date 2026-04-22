@@ -1,42 +1,42 @@
 import { db } from './database.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// --- 1. BLOQUEIO DE ACESSO (PROTEÇÃO) ---
-if (localStorage.getItem('viana_auth') !== 'true') {
-    window.location.href = 'login.html';
-}
+/**
+ * dashboard.js - Lógica de contagem e exibição de dados
+ */
 
-// --- 2. LÓGICA DO BOTÃO SAIR ---
-const btnLogout = document.getElementById('btn-logout');
-if (btnLogout) {
-    btnLogout.addEventListener('click', (e) => {
-        e.preventDefault();
-        localStorage.removeItem('viana_auth');
-        localStorage.removeItem('viana_user');
-        window.location.href = 'login.html';
-    });
-}
-
-// --- 3. CARREGAMENTO DE DADOS DO DASHBOARD ---
 async function carregarDados() {
     try {
-        console.log("Tentando conectar ao Firebase...");
+        console.log("Conectando ao banco de dados...");
         
-        // Busca Atletas
+        // 1. Busca e contagem de Atletas
         const queryAtletas = await getDocs(collection(db, "atletas"));
-        document.getElementById('count-atletas').innerText = queryAtletas.size;
+        const displayAtletas = document.getElementById('count-atletas');
+        if (displayAtletas) {
+            displayAtletas.innerText = queryAtletas.size;
+        }
         
-        // Busca Treinadores
+        // 2. Busca e contagem de Treinadores
         const queryTreinadores = await getDocs(collection(db, "treinadores"));
-        document.getElementById('count-treinadores').innerText = queryTreinadores.size;
+        const displayTreinadores = document.getElementById('count-treinadores');
+        if (displayTreinadores) {
+            displayTreinadores.innerText = queryTreinadores.size;
+        }
 
-        console.log("Sucesso: " + queryAtletas.size + " atletas encontradas.");
+        console.log("Dashboard atualizado com sucesso.");
+        
     } catch (error) {
-        console.error("Erro detalhado:", error);
-        // Se der erro, o número ficará com um "!" para você saber que falhou
-        document.getElementById('count-atletas').innerText = "!";
-        document.getElementById('count-treinadores').innerText = "!";
+        console.error("Falha ao carregar métricas do Dashboard:", error);
+        
+        // Exibe um sinal de erro visual nos contadores
+        if (document.getElementById('count-atletas')) {
+            document.getElementById('count-atletas').innerText = "!";
+        }
+        if (document.getElementById('count-treinadores')) {
+            document.getElementById('count-treinadores').innerText = "!";
+        }
     }
 }
 
+// Executa a função ao carregar o script
 carregarDados();
