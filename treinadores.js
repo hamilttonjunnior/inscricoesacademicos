@@ -7,6 +7,16 @@ const listaPreview = document.getElementById('lista-escaloes-preview');
 const selectEscalao = document.getElementById('t-escalao-vinculo');
 const formTreinador = document.getElementById('form-treinador');
 
+// Desenho da lixeira em SVG (Pequeno e minimalista)
+const iconeLixeira = `
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3 6h18"></path>
+  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+  <line x1="10" y1="11" x2="10" y2="17"></line>
+  <line x1="14" y1="11" x2="14" y2="17"></line>
+</svg>`;
+
 async function carregarEscaloes() {
     try {
         const q = query(collection(db, "escaloes"), orderBy("nome", "asc"));
@@ -26,19 +36,18 @@ async function carregarEscaloes() {
             }
             
             const tag = document.createElement('div');
-            tag.style.cssText = "display:flex; align-items:center; gap:10px; background:#f9f9fb; padding:6px 10px; border-radius:8px; border:1px solid #e1e1e6; margin-bottom:5px;";
+            tag.style.cssText = "display:flex; align-items:center; gap:8px; background:#f5f5f7; padding:6px 10px; border-radius:6px; border:1px solid #e5e5e7; margin-bottom:5px;";
             
             const spanNome = document.createElement('span');
-            spanNome.style.cssText = "font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#1a1a1e; letter-spacing:0.3px;";
+            spanNome.style.cssText = "font-size:0.7rem; font-weight:700; text-transform:uppercase; color:#1d1d1f; letter-spacing:0.3px;";
             spanNome.textContent = nome;
 
-            // Botão de Lixeira Elegante
+            // Botão com Ícone SVG embutido
             const btnDel = document.createElement('button');
-            // Criamos o ícone da lixeira (trash-2)
-            btnDel.innerHTML = `<i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>`; 
+            btnDel.innerHTML = iconeLixeira; 
             btnDel.style.cssText = "background:transparent; color:#ff3b30; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:4px; border-radius:4px; transition: 0.2s;";
             
-            btnDel.onmouseover = () => { btnDel.style.background = "#fff0f0"; };
+            btnDel.onmouseover = () => { btnDel.style.background = "#ffeded"; };
             btnDel.onmouseout = () => { btnDel.style.background = "transparent"; };
 
             btnDel.onclick = async (e) => {
@@ -55,10 +64,6 @@ async function carregarEscaloes() {
             tag.appendChild(btnDel);
             listaPreview.appendChild(tag);
         });
-
-        // Esta linha faz os ícones aparecerem de facto
-        lucide.createIcons();
-
     } catch (e) { console.error(e); }
 }
 
