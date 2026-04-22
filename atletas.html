@@ -22,18 +22,17 @@
 
     <main class="container">
         <section>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
-                <h2 style="margin: 0;">Ficha de Inscrição</h2>
-                <a href="lista-atletas.html" style="color: var(--text-secondary); font-size: 0.7rem; text-decoration: none; font-weight: 700; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 8px; text-transform: uppercase;">Base de Dados →</a>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                <h2 style="margin: 0;">Nova Inscrição Federada</h2>
+                <a href="lista-atletas.html" style="color: var(--soft-gray); font-size: 0.75rem; text-decoration: none; font-weight: 700; text-transform: uppercase; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 2px;">Consultar Base de Dados →</a>
             </div>
 
             <form id="form-atleta">
-                
                 <fieldset>
                     <legend>1. Identificação da Atleta</legend>
                     <div class="input-group">
                         <label>Nome Completo</label>
-                        <input type="text" id="nome" required placeholder="Nome Completo">
+                        <input type="text" id="nome" required placeholder="Nome completo da atleta">
                     </div>
                     <div class="grid-2-col">
                         <div class="input-group">
@@ -47,7 +46,7 @@
                     </div>
                     <div class="input-group">
                         <label>Naturalidade</label>
-                        <input type="text" id="naturalidade" placeholder="Concelho de Nascimento">
+                        <input type="text" id="naturalidade" placeholder="Concelho de nascimento">
                     </div>
                 </fieldset>
 
@@ -55,8 +54,8 @@
                     <legend>2. Documentação e Saúde</legend>
                     <div class="grid-2-col">
                         <div class="input-group">
-                            <label>CC / Passaporte / Residência</label>
-                            <input type="text" id="doc_id" placeholder="Número do Documento">
+                            <label>N° CC / Passaporte</label>
+                            <input type="text" id="doc_id" placeholder="Número do documento">
                         </div>
                         <div class="input-group">
                             <label>Validade</label>
@@ -70,21 +69,21 @@
                         </div>
                         <div class="input-group">
                             <label>N° Utente de Saúde</label>
-                            <input type="text" id="utente" placeholder="Número do Cartão de Saúde">
+                            <input type="text" id="utente" placeholder="Número do cartão de saúde">
                         </div>
                     </div>
                 </fieldset>
 
                 <fieldset>
-                    <legend>3. Filiação e Contacto</legend>
+                    <legend>3. Filiação e Contactos</legend>
                     <div class="grid-2-col">
                         <div class="input-group">
                             <label>Nome do Pai</label>
-                            <input type="text" id="nome_pai">
+                            <input type="text" id="nome_pai" placeholder="Nome completo">
                         </div>
                         <div class="input-group">
                             <label>Nome da Mãe</label>
-                            <input type="text" id="nome_mae">
+                            <input type="text" id="nome_mae" placeholder="Nome completo">
                         </div>
                     </div>
                     <div class="input-group">
@@ -93,12 +92,12 @@
                     </div>
                     <div class="input-group">
                         <label>Morada Completa</label>
-                        <input type="text" id="morada" placeholder="Rua, Número, Andar e Localidade">
+                        <input type="text" id="morada" placeholder="Rua, n°, andar e localidade">
                     </div>
                 </fieldset>
 
                 <fieldset>
-                    <legend>4. Vínculo ao Clube</legend>
+                    <legend>4. Informações do Clube</legend>
                     <div class="grid-2-col">
                         <div class="input-group">
                             <label>Escalão</label>
@@ -107,7 +106,7 @@
                             </select>
                         </div>
                         <div class="input-group">
-                            <label>Situação de Mensalidade</label>
+                            <label>Situação Financeira</label>
                             <select id="isento">
                                 <option value="false">Pagante (20€/mês)</option>
                                 <option value="true">Isento (Staff / Atleta Interna)</option>
@@ -116,11 +115,11 @@
                     </div>
                     <div class="input-group">
                         <label>Licença FPV n.°</label>
-                        <input type="text" id="licenca" placeholder="Caso já possua licença federada">
+                        <input type="text" id="licenca" placeholder="Caso já possua número de federada">
                     </div>
                 </fieldset>
 
-                <button type="submit">GRAVAR INSCRIÇÃO FEDERADA</button>
+                <button type="submit">GRAVAR INSCRIÇÃO COMPLETA</button>
             </form>
         </section>
     </main>
