@@ -1,10 +1,11 @@
 const USERS = {
-    "diogo": "viana2026",      // Senha do Diogo (Admin)
-    "carlos": "direcao2026",   // Senha do Carlos (Admin)
-    "secretario1": "sec123",   // Senha do Secretário 1 (Restrito)
-    "secretario2": "sec456"    // Senha do Secretário 2 (Restrito)
+    "diogo": "viana2026",      
+    "carlos": "direcao2026",   
+    "secretario1": "sec123",   
+    "secretario2": "sec456"    
 };
 
+// --- LÓGICA DE LOGIN ---
 const form = document.getElementById('form-login');
 if (form) {
     form.onsubmit = (e) => {
@@ -14,37 +15,36 @@ if (form) {
 
         if (USERS[user] === pass) {
             localStorage.setItem('viana_auth', 'true');
-            localStorage.setItem('viana_user', user); // Aqui guardamos o nome (ex: "secretario1")
+            localStorage.setItem('viana_user', user);
             
-            // Se for secretário, mandamos direto para o Financeiro, senão vai para o Dashboard
+            // Redirecionamento inicial inteligente
             if (user.includes('secretario')) {
                 window.location.href = 'financeiro.html';
             } else {
                 window.location.href = 'index.html';
             }
         } else {
-            document.getElementById('error-msg').style.display = 'block';
+            const errorMsg = document.getElementById('error-msg');
+            if (errorMsg) errorMsg.style.display = 'block';
         }
     };
 }
 
-// Função para proteger as páginas e gerir permissões
+// --- PROTEÇÃO DE PÁGINAS E PERMISSÕES ---
 function verificarAcesso() {
     const path = window.location.pathname;
     const isLoginPage = path.includes('login.html');
     const isAuthenticated = localStorage.getItem('viana_auth') === 'true';
     const userLogado = localStorage.getItem('viana_user');
 
-    // 1. Bloqueio de Segurança: Se não está logado e não é a página de login, expulsa
+    // 1. Se não está logado, expulsa para o login
     if (!isAuthenticated && !isLoginPage) {
         window.location.href = 'login.html';
         return;
     }
 
-    // 2. Lógica de Permissões para Secretários
+    // 2. Regras para Secretários
     if (isAuthenticated && userLogado && userLogado.includes('secretario')) {
-        
-        // Lista de páginas que o secretário NÃO pode entrar
         const proibidas = ['index.html', 'treinadores.html', 'atletas.html'];
         const tentandoEntrarProibida = proibidas.some(p => path.includes(p));
 
@@ -52,7 +52,7 @@ function verificarAcesso() {
             window.location.href = 'financeiro.html';
         }
 
-        // Esconder os links do menu visualmente quando o HTML carregar
+        // Esconder links do menu lateral/topo
         document.addEventListener('DOMContentLoaded', () => {
             const links = document.querySelectorAll('nav a');
             links.forEach(link => {
@@ -65,18 +65,17 @@ function verificarAcesso() {
     }
 }
 
-// Lógica do Botão Sair
+// --- LÓGICA GLOBAL DO BOTÃO SAIR ---
 document.addEventListener('DOMContentLoaded', () => {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
-        btnLogout.addEventListener('click', (e) => {
+        // Garantir que o clique funcione limpando eventos anteriores
+        btnLogout.onclick = (e) => {
             e.preventDefault();
-            localStorage.removeItem('viana_auth');
-            localStorage.removeItem('viana_user');
+            localStorage.clear();
             window.location.href = 'login.html';
-        });
+        };
     }
 });
 
-// Executa a proteção ao carregar o ficheiro
 verificarAcesso();
