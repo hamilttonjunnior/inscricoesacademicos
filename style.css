@@ -1,4 +1,4 @@
-/* style.css - Minimalista & Clean (Viana Volei Edition) */
+/* style.css - Minimalista & Clean (Viana Volei Edition - Atualizado) */
 :root {
     --bg-body: #ffffff;
     --bg-section: #fafafa;
@@ -123,20 +123,21 @@ input:focus { outline: none; border-color: var(--accent-gray); background: var(-
     align-items: center; 
     transition: 0.2s; 
     background: #fff;
+    user-select: none;
 }
 
 .accordion-header:hover { background: var(--bg-section); }
 
 .accordion-content { 
-    display: none; /* Mantém minimizado por padrão */
+    display: none; /* Força o estado fechado por padrão */
     padding: 25px; 
     border-top: 1px solid var(--border-color); 
     background: #ffffff; 
 }
 
-/* Quando a classe .active é adicionada via JS, a caixa abre */
+/* Classe de ativação para abrir a caixa */
 .accordion.active .accordion-content { 
-    display: block; 
+    display: block !important; 
 }
 
 .accordion.active .accordion-header { 
@@ -171,6 +172,27 @@ button:hover, .btn-link:hover { opacity: 0.9; }
     text-align: left; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gray); 
 }
 .count-number { font-size: 3rem; font-weight: 800; color: var(--text-main); margin: 0; }
+
+/* Tabelas Internas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    color: var(--soft-gray);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 5px;
+    border-bottom: 2px solid var(--bg-section);
+}
+
+td {
+    padding: 12px 5px;
+    border-bottom: 1px solid var(--bg-section);
+}
 
 /* Grid Utilitário */
 .grid-2-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
