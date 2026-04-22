@@ -5,7 +5,7 @@ const listaAtletasCards = document.getElementById('lista-atletas-cards');
 const filtroEscalao = document.getElementById('filtro-escalao');
 const pesquisaNome = document.querySelector('input[placeholder*="Escreve o nome"]');
 
-// Ícones SVG para garantir que aparecem sempre
+// Ícones SVG
 const iconeLixeira = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>`;
 const iconeEditar = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`;
 const iconeSeta = `<svg class="seta-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s;"><path d="m6 9 6 6 6-6"/></svg>`;
@@ -37,7 +37,6 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
             card.className = "accordion-item";
             card.style.cssText = "background:#fff; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:10px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.02);";
 
-            // Formatação da data de nascimento (AAAA-MM-DD para DD/MM/AAAA)
             const dataNasc = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '---';
 
             card.innerHTML = `
@@ -68,21 +67,18 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
                     </div>
 
                     <div style="display:flex; gap:10px; margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
-                        <button class="btn-edit" style="background:#333; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:0.75rem;">${iconeEditar} EDITAR ATLETA</button>
-                        <button class="btn-del" style="background:#fff; color:#ef4444; border:1px solid #fecaca; padding:8px 15px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:0.75rem;">${iconeLixeira} ELIMINAR</button>
+                        <button class="btn-editar-atleta" style="background:#333; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:0.75rem;">${iconeEditar} EDITAR ATLETA</button>
+                        <button class="btn-eliminar-atleta" style="background:#fff; color:#ef4444; border:1px solid #fecaca; padding:8px 15px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:0.75rem;">${iconeLixeira} ELIMINAR</button>
                     </div>
                 </div>
             `;
 
-            // Lógica de Abrir/Fechar ao clicar no cabeçalho
             const header = card.querySelector('.accordion-header');
             const content = card.querySelector('.accordion-content');
             const seta = card.querySelector('.seta-icon');
 
             header.onclick = () => {
                 const estaAberto = content.style.display === "block";
-                
-                // Fecha outros (opcional, remove se quiseres vários abertos ao mesmo tempo)
                 document.querySelectorAll('.accordion-content').forEach(c => c.style.display = "none");
                 document.querySelectorAll('.seta-icon').forEach(s => s.style.transform = "rotate(0deg)");
 
@@ -92,15 +88,16 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
                 }
             };
 
-            // Impedir que o clique nos botões feche o acordeão
-            card.querySelector('.btn-edit').onclick = (e) => {
+            // Clique no botão Editar (Redirecionamento Corrigido)
+            card.querySelector('.btn-editar-atleta').onclick = (e) => {
                 e.stopPropagation();
                 window.location.href = `atletas.html?edit=${a.id}`;
             };
 
-            card.querySelector('.btn-del').onclick = async (e) => {
+            // Clique no botão Eliminar
+            card.querySelector('.btn-eliminar-atleta').onclick = async (e) => {
                 e.stopPropagation();
-                if (confirm(`Remover atleta ${a.nome}? Esta ação é permanente.`)) {
+                if (confirm(`Remover atleta ${a.nome}?`)) {
                     await deleteDoc(doc(db, "atletas", a.id));
                     carregarAtletas(filtroEscalao.value, pesquisaNome.value);
                 }
@@ -109,13 +106,11 @@ async function carregarAtletas(escalaoFiltro = "", nomeFiltro = "") {
             listaAtletasCards.appendChild(card);
         });
     } catch (e) {
-        console.error("Erro ao carregar atletas:", e);
+        console.error("Erro ao carregar:", e);
     }
 }
 
-// Eventos de Filtros
 if (filtroEscalao) filtroEscalao.onchange = (e) => carregarAtletas(e.target.value, pesquisaNome.value);
 if (pesquisaNome) pesquisaNome.oninput = (e) => carregarAtletas(filtroEscalao.value, e.target.value);
 
-// Inicializar carregamento
 carregarAtletas();
