@@ -3,64 +3,60 @@ import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc } from "htt
 
 const formAtleta = document.getElementById('form-atleta');
 const selectEscalao = document.getElementById('atleta-escalao');
-const btnSubmit = document.getElementById('btn-submit');
+const tituloForm = document.getElementById('titulo-form');
+const btnGravar = document.getElementById('btn-gravar');
 const botoesSalvar = document.getElementById('botoes-salvar');
 const botoesEdicao = document.getElementById('botoes-edicao');
-const tituloForm = document.getElementById('titulo-form');
 
-// Carregar Escalões
-async function carregarEscaloes() {
+// 1. Inicialização: Carrega escalões e verifica se é Edição
+async function inicializar() {
+    // Carregar Escalões
     const q = query(collection(db, "escaloes"), orderBy("nome", "asc"));
-    const querySnapshot = await getDocs(q);
+    const snap = await getDocs(q);
     selectEscalao.innerHTML = '<option value="">Selecione o Escalão</option>';
-    querySnapshot.forEach(d => {
+    snap.forEach(d => {
         const opt = document.createElement('option');
         opt.value = d.data().nome;
         opt.textContent = d.data().nome;
         selectEscalao.appendChild(opt);
     });
-    // Verifica se há edição pendente APÓS carregar escalões
-    verificarEdicao();
-}
 
-function verificarEdicao() {
-    const atletaParaEditar = JSON.parse(localStorage.getItem('editandoAtleta'));
-    if (atletaParaEditar) {
-        tituloForm.innerText = "Editar Atleta: " + atletaParaEditar.nome;
-        document.getElementById('atleta-id').value = atletaParaEditar.id;
-        document.getElementById('nome').value = atletaParaEditar.nome;
-        document.getElementById('data_nasc').value = atletaParaEditar.data_nascimento;
-        document.getElementById('nacionalidade').value = atletaParaEditar.nacionalidade || "";
-        document.getElementById('naturalidade').value = atletaParaEditar.naturalidade || "";
-        document.getElementById('doc_id').value = atletaParaEditar.documento_id || "";
-        document.getElementById('val_id').value = atletaParaEditar.validate_id || ""; // Ajustado para match com HTML
-        document.getElementById('nif').value = atletaParaEditar.nif || "";
-        document.getElementById('utente').value = atletaParaEditar.numero_utente || "";
-        document.getElementById('nome_pai').value = atletaParaEditar.nome_pai || "";
-        document.getElementById('nome_mae').value = atletaParaEditar.nome_mae || "";
-        document.getElementById('tel').value = atletaParaEditar.telefone;
-        document.getElementById('morada').value = atletaParaEditar.morada || "";
-        document.getElementById('atleta-escalao').value = atletaParaEditar.escalao;
-        document.getElementById('isento').value = atletaParaEditar.isento;
-        document.getElementById('licenca').value = atletaParaEditar.licenca_fpv || "";
-
+    // Verificar se existe atleta para editar
+    const dadosEdicao = localStorage.getItem('editandoAtleta');
+    if (dadosEdicao) {
+        const atleta = JSON.parse(dadosEdicao);
+        
+        // Troca o Título e os Botões
+        tituloForm.innerText = "Editar Atleta: " + atleta.nome;
         botoesSalvar.style.display = 'none';
         botoesEdicao.style.display = 'flex';
+
+        // Preenche os Campos
+        document.getElementById('atleta-id').value = atleta.id;
+        document.getElementById('nome').value = atleta.nome;
+        document.getElementById('data_nasc').value = atleta.data_nascimento;
+        document.getElementById('nacionalidade').value = atleta.nacionalidade || "";
+        document.getElementById('naturalidade').value = atleta.naturalidade || "";
+        document.getElementById('doc_id').value = atleta.documento_id || "";
+        document.getElementById('val_id').value = atleta.validade_id || "";
+        document.getElementById('nif').value = atleta.nif || "";
+        document.getElementById('utente').value = atleta.numero_utente || "";
+        document.getElementById('nome_pai').value = atleta.nome_pai || "";
+        document.getElementById('nome_mae').value = atleta.nome_mae || "";
+        document.getElementById('tel').value = atleta.telefone;
+        document.getElementById('morada').value = atleta.morada || "";
+        document.getElementById('atleta-escalao').value = atleta.escalao;
+        document.getElementById('isento').value = atleta.isento;
+        document.getElementById('licenca').value = atleta.licenca_fpv || "";
     }
 }
 
-// Botão Cancelar
-document.getElementById('btn-cancelar').onclick = () => {
-    localStorage.removeItem('editandoAtleta');
-    window.location.href = 'lista-atletas.html';
-};
-
-// Botão Atualizar (EDITAR)
+// 2. Botão Atualizar (UPDATE)
 document.getElementById('btn-atualizar').onclick = async () => {
     const id = document.getElementById('atleta-id').value;
     const atletaRef = doc(db, "atletas", id);
-    
-    const dadosAtualizados = {
+
+    const dados = {
         nome: document.getElementById('nome').value,
         data_nascimento: document.getElementById('data_nasc').value,
         nacionalidade: document.getElementById('nacionalidade').value,
@@ -79,19 +75,23 @@ document.getElementById('btn-atualizar').onclick = async () => {
     };
 
     try {
-        await updateDoc(atletaRef, dadosAtualizados);
-        alert("Dados atualizados com sucesso!");
+        await updateDoc(atletaRef, dados);
+        alert("Dados de " + dados.nome + " atualizados com sucesso!");
         localStorage.removeItem('editandoAtleta');
         window.location.href = 'lista-atletas.html';
-    } catch (e) {
-        alert("Erro ao atualizar.");
-    }
+    } catch (e) { alert("Erro ao atualizar."); }
 };
 
-// Gravar Novo Atleta
+// 3. Botão Cancelar
+document.getElementById('btn-cancelar').onclick = () => {
+    localStorage.removeItem('editandoAtleta');
+    window.location.href = 'lista-atletas.html';
+};
+
+// 4. Gravar Novo (CREATE)
 formAtleta.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (localStorage.getItem('editandoAtleta')) return; // Evita duplicar se estiver editando
+    if (localStorage.getItem('editandoAtleta')) return;
 
     const novaAtleta = {
         nome: document.getElementById('nome').value,
@@ -115,9 +115,9 @@ formAtleta.addEventListener('submit', async (e) => {
 
     try {
         await addDoc(collection(db, "atletas"), novaAtleta);
-        alert("Atleta gravada!");
+        alert("Gravada com sucesso!");
         formAtleta.reset();
-    } catch (error) { alert("Erro ao gravar."); }
+    } catch (e) { alert("Erro ao gravar."); }
 });
 
-carregarEscaloes();
+inicializar();
