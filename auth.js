@@ -5,7 +5,7 @@ const USERS = {
     "secretario2": "sec456"    
 };
 
-// --- LÓGICA DE LOGIN ---
+// 1. Lógica de Login
 const form = document.getElementById('form-login');
 if (form) {
     form.onsubmit = (e) => {
@@ -29,54 +29,55 @@ if (form) {
     };
 }
 
-// --- PROTEÇÃO DE ACESSO E ESCONDER MENU ---
+// 2. Proteção de Acesso e Limpeza do Menu
 function gerirPermissoes() {
-    const path = window.location.pathname;
     const userLogado = localStorage.getItem('viana_user');
     const isAuthenticated = localStorage.getItem('viana_auth') === 'true';
+    const path = window.location.pathname;
 
-    // 1. Se não está logado e não é a página de login, expulsa
     if (!isAuthenticated && !path.includes('login.html')) {
         window.location.href = 'login.html';
         return;
     }
 
-    // 2. Se for Secretário, aplicamos as restrições
     if (userLogado && userLogado.includes('secretario')) {
-        const paginasProibidas = ['index.html', 'treinadores.html', 'atletas.html'];
+        const proibidas = ['index.html', 'treinadores.html', 'atletas.html'];
         
-        // Bloqueio de URL (se tentar digitar o link)
-        const tentandoEntrarNoQueNaoPode = paginasProibidas.some(p => path.includes(p));
-        if (tentandoEntrarNoQueNaoPode) {
+        // Se tentar entrar na URL na mão, expulsa
+        if (proibidas.some(p => path.includes(p))) {
             window.location.href = 'financeiro.html';
-            return;
         }
 
-        // Esconder os links do menu (usamos um intervalo para garantir que o menu já existe)
-        const checkMenu = setInterval(() => {
-            const links = document.querySelectorAll('nav a');
-            if (links.length > 0) {
-                links.forEach(link => {
-                    const href = link.getAttribute('href');
-                    if (paginasProibidas.includes(href)) {
-                        link.remove(); // Remove o link completamente do código para ele não clicar sem querer
-                    }
-                });
-                clearInterval(checkMenu); // Para de procurar quando encontrar e remover
+        // ESCONDER IMEDIATAMENTE (Via CSS dinâmico)
+        const style = document.createElement('style');
+        style.innerHTML = `
+            nav a[href="index.html"], 
+            nav a[href="treinadores.html"], 
+            nav a[href="atletas.html"] { 
+                display: none !important; 
             }
-        }, 50); // Procura a cada 50ms
+        `;
+        document.head.appendChild(style);
+
+        // REMOVER DO DOM (Para segurança extra após carregar)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('nav a').forEach(link => {
+                if (proibidas.some(p => link.getAttribute('href')?.includes(p))) {
+                    link.remove();
+                }
+            });
+        });
     }
 }
 
-// --- BOTÃO SAIR ---
-window.onclick = function(event) {
-    const btn = event.target.closest('#btn-logout');
+// 3. Lógica do Botão Sair (Delegada para funcionar sempre)
+window.addEventListener('click', (e) => {
+    const btn = e.target.closest('#btn-logout');
     if (btn) {
-        event.preventDefault();
+        e.preventDefault();
         localStorage.clear();
         window.location.href = 'login.html';
     }
-};
+});
 
-// Executar as permissões
 gerirPermissoes();
