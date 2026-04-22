@@ -1,81 +1,81 @@
 import { db } from './database.js';
 import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const container = document.getElementById('lista-escaloes-complexa');
+const container = document.getElementById('container-escaloes');
 
-async function carregarVisaoGeral() {
+async function carregarEscaloesComplexo() {
     try {
-        // 1. Procurar todos os dados necessários
-        const snapEscaloes = await getDocs(query(collection(db, "escaloes"), orderBy("nome", "asc")));
-        const snapAtletas = await getDocs(collection(db, "atletas"));
-        const snapTreinadores = await getDocs(collection(db, "treinadores"));
+        if (!container) return;
 
-        const atletas = snapAtletas.docs.map(d => d.data());
-        const treinadores = snapTreinadores.docs.map(d => d.data());
+        // Busca todos os dados
+        const snapEsc = await getDocs(query(collection(db, "escaloes"), orderBy("nome", "asc")));
+        const snapAtl = await getDocs(collection(db, "atletas"));
+        const snapTre = await getDocs(collection(db, "treinadores"));
+
+        const todasAtletas = snapAtl.docs.map(d => d.data());
+        const todosTreinadores = snapTre.docs.map(d => d.data());
 
         container.innerHTML = "";
 
-        if (snapEscaloes.empty) {
-            container.innerHTML = "<p style='text-align:center; color:#888;'>Nenhum escalão configurado na página de Treinadores.</p>";
+        if (snapEsc.empty) {
+            container.innerHTML = "<p style='text-align:center; padding:20px;'>Crie escalões na página de Treinadores primeiro.</p>";
             return;
         }
 
-        // 2. Para cada escalão, criar a box minimizada
-        snapEscaloes.forEach(docEsc => {
+        snapEsc.forEach(docEsc => {
             const nomeEscalao = docEsc.data().nome;
 
-            // Filtrar quem pertence a este escalão
-            const treinadorResponsavel = treinadores.find(t => t.escalao === nomeEscalao);
-            const atletasDoGrupo = atletas.filter(a => a.escalao === nomeEscalao);
+            // Filtra quem é deste escalão
+            const treinador = todosTreinadores.find(t => t.escalao === nomeEscalao);
+            const atletasDesteEscalao = todasAtletas.filter(a => a.escalao === nomeEscalao);
 
             const card = document.createElement('div');
-            card.className = 'accordion'; // Usa o mesmo estilo de caixa da lista de atletas
+            card.className = 'accordion'; 
             
             card.innerHTML = `
                 <div class="accordion-header">
                     <div>
-                        <strong style="font-size: 1.1rem;">${nomeEscalao}</strong>
-                        <span style="margin-left: 10px; color: #888; font-size: 0.8rem;">
-                            (${atletasDoGrupo.length} Atletas)
-                        </span>
+                        <span style="font-weight: 800; font-size: 1.1rem; color: #1a1a1a;">${nomeEscalao}</span>
+                        <small style="margin-left: 10px; color: #888; font-weight: 600;">(${atletasDesteEscalao.length} Atletas)</small>
                     </div>
-                    <span>ABRIR GRUPO ▼</span>
+                    <span style="font-size: 0.7rem; font-weight: 800; color: #333;">ABRIR ▼</span>
                 </div>
                 <div class="accordion-content">
-                    <div style="background: #f0f0f0; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                        <h3 style="margin-bottom: 10px; font-size: 0.8rem; color: #555;">TREINADOR / RESPONSÁVEL</h3>
-                        ${treinadorResponsavel ? `
-                            <p style="margin: 0; font-weight: 700;">${treinadorResponsavel.nome}</p>
-                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #666;">
-                                Licença: ${treinadorResponsavel.licenca || 'N/A'} | Tel: ${treinadorResponsavel.telefone}
+                    <div style="background: #fafafa; padding: 15px; border-radius: 4px; border: 1px solid #eee; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Treinador Responsável</h4>
+                        ${treinador ? `
+                            <p style="margin: 0; font-weight: 700; color: #1a1a1a;">${treinador.nome}</p>
+                            <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #555;">
+                                <strong>Licença:</strong> ${treinador.licenca || '---'} | 
+                                <strong>Telefone:</strong> ${treinador.telefone}
                             </p>
-                        ` : '<p style="color: #999; font-style: italic; margin: 0;">Nenhum treinador atribuído.</p>'}
+                        ` : '<p style="margin:0; font-size:0.85rem; color:#bbb; font-style:italic;">Nenhum treinador atribuído.</p>'}
                     </div>
 
-                    <h3 style="font-size: 0.8rem; color: #555; margin-bottom: 10px;">LISTA DE ATLETAS</h3>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-                        <thead style="text-align: left; border-bottom: 2px solid #eee;">
-                            <tr>
-                                <th style="padding: 10px 5px;">Nome</th>
-                                <th style="padding: 10px 5px;">Telemóvel</th>
+                    <h4 style="margin: 0 0 10px 0; font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Lista de Atletas</h4>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 2px solid #eee;">
+                                <th style="padding: 8px 5px;">Nome</th>
+                                <th style="padding: 8px 5px;">Telemóvel</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${atletasDoGrupo.length > 0 ? 
-                                atletasDoGrupo.map(a => `
-                                    <tr style="border-bottom: 1px solid #f5f5f5;">
-                                        <td style="padding: 10px 5px;">${a.nome}</td>
-                                        <td style="padding: 10px 5px;">${a.telefone}</td>
+                            ${atletasDesteEscalao.length > 0 ? 
+                                atletasDesteEscalao.map(a => `
+                                    <tr style="border-bottom: 1px solid #f9f9f9;">
+                                        <td style="padding: 10px 5px; font-weight: 500;">${a.nome}</td>
+                                        <td style="padding: 10px 5px; color: #666;">${a.telefone}</td>
                                     </tr>
                                 `).join('') 
-                                : '<tr><td colspan="2" style="padding: 20px; color: #999; text-align: center;">Sem atletas inscritas neste escalão.</td></tr>'
+                                : '<tr><td colspan="2" style="padding: 15px; text-align: center; color: #ccc;">Nenhuma atleta inscrita neste escalão.</td></tr>'
                             }
                         </tbody>
                     </table>
                 </div>
             `;
 
-            // Lógica para abrir/fechar (Minimizado por padrão)
+            // Lógica para Expandir/Minimizar
             card.querySelector('.accordion-header').onclick = () => {
                 card.classList.toggle('active');
             };
@@ -84,9 +84,9 @@ async function carregarVisaoGeral() {
         });
 
     } catch (e) {
-        console.error("Erro na visão geral:", e);
-        container.innerHTML = "<p>Erro ao carregar os grupos.</p>";
+        console.error("Erro ao montar escalões:", e);
+        if(container) container.innerHTML = "<p>Erro ao processar dados.</p>";
     }
 }
 
-carregarVisaoGeral();
+carregarEscaloesComplexo();
