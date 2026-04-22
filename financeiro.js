@@ -1,14 +1,32 @@
 import { db } from './database.js';
 import { collection, getDocs, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// --- VERIFICAÇÃO DE SEGURANÇA (AUTH) ---
+if (localStorage.getItem('viana_auth') !== 'true') {
+    window.location.href = 'login.html';
+}
+
 const listaFinanceiro = document.getElementById('lista-financeiro-escaloes');
 const filtroEscalao = document.getElementById('filtro-escalao-fin');
 const filtroStatus = document.getElementById('filtro-status-fin');
+const filtroAno = document.getElementById('filtro-ano-fin');
+const btnLogout = document.getElementById('btn-logout');
 
 const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
+// Função de Logout
+if (btnLogout) {
+    btnLogout.onclick = () => {
+        localStorage.removeItem('viana_auth');
+        localStorage.removeItem('viana_user');
+        window.location.href = 'login.html';
+    };
+}
+
 async function carregarFinanceiro() {
     try {
+        const anoAtual = filtroAno.value;
+
         // 1. Carregar Escalões para o filtro
         const qEsc = query(collection(db, "escaloes"), orderBy("nome", "asc"));
         const snapEsc = await getDocs(qEsc);
@@ -33,8 +51,8 @@ async function carregarFinanceiro() {
         
         if (filtroStatus.value === "pendente") {
             atletas = atletas.filter(a => {
-                const pags = a.pagamentos || {};
-                return meses.some((_, i) => !pags[`mes_${i}`]); // Verifica se algum mês está false/vazio
+                const pagsAno = (a.pagamentos && a.pagamentos[anoAtual]) ? a.pagamentos[anoAtual] : {};
+                return meses.some((_, i) => !pagsAno[`mes_${i}`]);
             });
         }
 
@@ -48,17 +66,18 @@ async function carregarFinanceiro() {
         listaFinanceiro.innerHTML = "";
 
         if (Object.keys(grupos).length === 0) {
-            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Nenhuma informação encontrada para estes filtros.</p>";
+            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Sem registos para esta seleção.</p>";
             return;
         }
 
-        // 5. Gerar Visual
+        // 5. Gerar Tabelas
         for (const esc in grupos) {
             const seccao = document.createElement('div');
+            seccao.className = "escalao-group";
             
             seccao.innerHTML = `
                 <div class="escalao-header">
-                    <span style="font-weight:800; font-size:0.9rem; letter-spacing:0.5px;">${esc.toUpperCase()} <small style="color:#888; font-weight:400; margin-left:10px;">(${grupos[esc].length} Atletas)</small></span>
+                    <span style="font-weight:800; font-size:0.9rem;">${esc.toUpperCase()} <small style="color:#888; font-weight:400; margin-left:10px;">(${grupos[esc].length} Atletas - Ano ${anoAtual})</small></span>
                     <span class="seta">▼</span>
                 </div>
                 <div class="escalao-content">
@@ -74,8 +93,8 @@ async function carregarFinanceiro() {
                                 <tr>
                                     <td>${a.nome.toUpperCase()}</td>
                                     ${meses.map((_, i) => {
-                                        const pago = (a.pagamentos && a.pagamentos[`mes_${i}`]) === true;
-                                        return `<td><input type="checkbox" class="check-pag" data-id="${a.id}" data-mes="mes_${i}" ${pago ? 'checked' : ''}></td>`;
+                                        const pago = (a.pagamentos && a.pagamentos[anoAtual] && a.pagamentos[anoAtual][`mes_${i}`]) === true;
+                                        return `<td><input type="checkbox" class="check-pag" data-id="${a.id}" data-ano="${anoAtual}" data-mes="mes_${i}" ${pago ? 'checked' : ''}></td>`;
                                     }).join('')}
                                 </tr>
                             `).join('')}
@@ -84,7 +103,7 @@ async function carregarFinanceiro() {
                 </div>
             `;
 
-            // Lógica do Acordeão
+            // Lógica Acordeão
             const header = seccao.querySelector('.escalao-header');
             const content = seccao.querySelector('.escalao-content');
             header.onclick = () => {
@@ -93,33 +112,31 @@ async function carregarFinanceiro() {
                 header.querySelector('.seta').style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
             };
 
-            // Lógica do Checkbox (Salvar automático)
+            // Lógica Checkbox (Gravação por Ano)
             seccao.querySelectorAll('.check-pag').forEach(input => {
                 input.onchange = async (e) => {
                     const id = e.target.dataset.id;
+                    const ano = e.target.dataset.ano;
                     const mes = e.target.dataset.mes;
                     const valor = e.target.checked;
                     
                     try {
                         const ref = doc(db, "atletas", id);
-                        await updateDoc(ref, { [`pagamentos.${mes}`]: valor });
+                        await updateDoc(ref, { [`pagamentos.${ano}.${mes}`]: valor });
                     } catch (err) {
-                        alert("Erro ao salvar pagamento.");
-                        e.target.checked = !valor; // Reverte em caso de erro
+                        alert("Erro ao guardar.");
+                        e.target.checked = !valor;
                     }
                 };
             });
 
             listaFinanceiro.appendChild(seccao);
         }
-
     } catch (e) { console.error(e); }
 }
 
 filtroEscalao.onchange = carregarFinanceiro;
 filtroStatus.onchange = carregarFinanceiro;
+filtroAno.onchange = carregarFinanceiro;
+
 carregarFinanceiro();
-// Adiciona isto no topo ou no final de cada ficheiro JS
-if (localStorage.getItem('viana_auth') !== 'true') {
-    window.location.href = 'login.html';
-}
