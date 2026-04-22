@@ -29,11 +29,10 @@ async function carregarFinanceiro() {
         const anoSelecionado = parseInt(filtroAno.value);
         const hoje = new Date();
         const anoCorrente = hoje.getFullYear();
-        const mesCorrenteIndex = hoje.getMonth(); // Ex: 3 para Abril
+        const mesCorrenteIndex = hoje.getMonth(); 
 
-        listaFinanceiro.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">A atualizar dados...</p>`;
+        listaFinanceiro.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">A sincronizar dados...</p>`;
 
-        // Carregar Escalões para o filtro
         if (filtroEscalao.options.length === 0) {
             const snapEsc = await getDocs(query(collection(db, "escaloes"), orderBy("nome", "asc")));
             filtroEscalao.innerHTML = '<option value="todos">Todos os Escalões</option>';
@@ -47,23 +46,26 @@ async function carregarFinanceiro() {
         const snapAtl = await getDocs(query(collection(db, "atletas"), orderBy("nome", "asc")));
         let atletas = snapAtl.docs.map(d => ({ id: d.id, ...d.data() }));
 
-        // Filtro de Escalão
         if (filtroEscalao.value !== "todos") {
             atletas = atletas.filter(a => a.escalao === filtroEscalao.value);
         }
         
-        // FILTRO DE DEVEDORAS DO MÊS ATUAL
+        // --- REGRA DE OURO: FILTRO DE PENDÊNCIAS ACUMULADAS ---
         if (filtroStatus.value === "pendente") {
             atletas = atletas.filter(a => {
                 const pagsAno = (a.pagamentos && a.pagamentos[anoSelecionado]) ? a.pagamentos[anoSelecionado] : {};
                 
-                // No ano atual, foca no mês em que estamos
-                if (anoSelecionado === anoCorrente) {
-                    return !pagsAno[`mes_${mesCorrenteIndex}`]; 
-                } 
-                // Em anos passados, mostra quem tem qualquer falha
-                else if (anoSelecionado < anoCorrente) {
+                if (anoSelecionado < anoCorrente) {
+                    // Anos passados: mostra se deve qualquer mês do ano
                     return meses.some((_, i) => !pagsAno[`mes_${i}`]);
+                } 
+                else if (anoSelecionado === anoCorrente) {
+                    // Ano atual: Verifica de Janeiro até ao Mês Corrente
+                    // Se faltar QUALQUER um destes meses, ela continua na lista
+                    for (let i = 0; i <= mesCorrenteIndex; i++) {
+                        if (!pagsAno[`mes_${i}`]) return true; 
+                    }
+                    return false; // Está 100% em dia até hoje
                 }
                 return false;
             });
@@ -78,7 +80,7 @@ async function carregarFinanceiro() {
         listaFinanceiro.innerHTML = "";
 
         if (Object.keys(grupos).length === 0) {
-            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Nenhum registro para esta seleção.</p>";
+            listaFinanceiro.innerHTML = "<p style='text-align:center; padding:40px; color:#888;'>Tudo em dia para este filtro!</p>";
             return;
         }
 
@@ -87,7 +89,7 @@ async function carregarFinanceiro() {
             seccao.className = "escalao-group";
             seccao.innerHTML = `
                 <div class="escalao-header">
-                    <span style="font-weight:800; font-size:0.9rem;">${esc.toUpperCase()}</span>
+                    <span style="font-weight:800; font-size:0.9rem;">${esc.toUpperCase()} <small>(${grupos[esc].length})</small></span>
                     <span>▼</span>
                 </div>
                 <div class="escalao-content" style="display:none; overflow-x:auto;">
@@ -96,9 +98,8 @@ async function carregarFinanceiro() {
                             <tr>
                                 <th>Nome</th>
                                 ${meses.map((m, i) => {
-                                    // Destaca a coluna do mês atual
                                     const isMesAtual = (i === mesCorrenteIndex && anoSelecionado === anoCorrente);
-                                    return `<th style="${isMesAtual ? 'background:#fff0f0; color:#dc2626; border: 2px solid #dc2626;' : ''}">${m}</th>`;
+                                    return `<th style="${isMesAtual ? 'background:#fff0f0; color:#dc2626; border-bottom: 2px solid #dc2626;' : ''}">${m}</th>`;
                                 }).join('')}
                             </tr>
                         </thead>
@@ -127,11 +128,10 @@ async function carregarFinanceiro() {
                     const { id, ano, mes } = e.target.dataset;
                     const valor = e.target.checked;
                     try {
-                        const ref = doc(db, "atletas", id);
-                        await updateDoc(ref, { [`pagamentos.${ano}.${mes}`]: valor });
+                        await updateDoc(doc(db, "atletas", id), { [`pagamentos.${ano}.${mes}`]: valor });
                         
-                        // Se estivermos no filtro de pendentes e o utilizador picar o mês atual, a atleta some da lista
-                        if (filtroStatus.value === "pendente" && mes === `mes_${mesCorrenteIndex}`) {
+                        // Recarrega a lista se estivermos no filtro de devedoras para verificar se ela limpou a dívida total
+                        if (filtroStatus.value === "pendente") {
                             setTimeout(() => carregarFinanceiro(), 400);
                         }
                     } catch (err) { alert("Erro!"); e.target.checked = !valor; }
